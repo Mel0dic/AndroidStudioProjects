@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ViginereTranslater</string>
+    <string name="encryptButton">Encrypt</string>
+    <string name="decryptButton">Decrypt</string>
+</resources>
