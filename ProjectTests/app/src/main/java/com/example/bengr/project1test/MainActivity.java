@@ -1,6 +1,5 @@
 package com.example.bengr.project1test;
 
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Window;
@@ -30,14 +29,14 @@ public class MainActivity extends AppCompatActivity {
         TextHW = findViewById(R.id.TextHW);
 
         translatebu= AnimationUtils.loadAnimation(this, R.anim.animationfile);
-        TextHW.setText("TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST");
+        TextHW.setText(R.string.test);
         TextHW.startAnimation(translatebu);
     }
 
     public void endAnimation(View pView){
         if(count == 0){
             System.out.println("Finish");
-            TextHW.setText("Done");
+            TextHW.setText(R.string.finish);
             TextHW.clearAnimation();
             count++;
         }

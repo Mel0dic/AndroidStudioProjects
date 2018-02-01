@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">The Matrix</string>
-    <color name="black">#000000</color>
-    <color name="matrixGreen">#00ff00</color>
+    <string name="test">TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST</string>
+    <string name="finish">Done</string>
 </resources>
