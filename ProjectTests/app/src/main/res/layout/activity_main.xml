@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
     tools:context="com.example.bengr.project1test.MainActivity"
     android:onClick="endAnimation"
     android:background="@color/black">
