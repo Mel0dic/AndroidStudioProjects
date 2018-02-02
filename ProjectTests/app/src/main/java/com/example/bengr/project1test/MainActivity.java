@@ -7,12 +7,14 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
     Animation translatebu;
     TextView TextHW;
+    TextView Textsomething;
     int count = 0;
 
     @Override
@@ -27,10 +29,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void addAnimation(){
         TextHW = findViewById(R.id.TextHW);
+        Textsomething = findViewById(R.id.TextHW);
 
         translatebu= AnimationUtils.loadAnimation(this, R.anim.animationfile);
         TextHW.setText(R.string.test);
+        Textsomething.setText("test");
         TextHW.startAnimation(translatebu);
+        Textsomething.startAnimation(translatebu);
     }
 
     public void endAnimation(View pView){
