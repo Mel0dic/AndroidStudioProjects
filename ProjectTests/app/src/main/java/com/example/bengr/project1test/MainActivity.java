@@ -13,6 +13,7 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     Animation translatebu;
+    Animation translatebo;
     TextView TextHW;
     TextView Textsomething;
     int count = 0;
@@ -29,20 +30,24 @@ public class MainActivity extends AppCompatActivity {
 
     public void addAnimation(){
         TextHW = findViewById(R.id.TextHW);
-        Textsomething = findViewById(R.id.TextHW);
+        Textsomething = findViewById(R.id.TextOther);
 
         translatebu= AnimationUtils.loadAnimation(this, R.anim.animationfile);
+        translatebo= AnimationUtils.loadAnimation(this, R.anim.animationfile);
+
         TextHW.setText(R.string.test);
         Textsomething.setText("test");
         TextHW.startAnimation(translatebu);
-        Textsomething.startAnimation(translatebu);
+        Textsomething.startAnimation(translatebo);
     }
 
     public void endAnimation(View pView){
         if(count == 0){
             System.out.println("Finish");
             TextHW.setText(R.string.finish);
+            Textsomething.setText("");
             TextHW.clearAnimation();
+            Textsomething.clearAnimation();
             count++;
         }
     }
