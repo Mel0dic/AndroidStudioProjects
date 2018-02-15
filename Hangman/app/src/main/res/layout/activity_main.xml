@@ -15,7 +15,7 @@
         android:layout_marginTop="19dp"
         android:gravity="center"
         android:text="Enter Your Guess Here"
-        android:textSize="20dp"/>
+        android:textSize="20sp"/>
 
     <EditText
         android:id="@+id/inputGuess"
@@ -43,6 +43,6 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="9dp"
-        android:textSize="30dp"
+        android:textSize="30sp"
         android:text="_ _ _ _ _ _ _" />
 </RelativeLayout>
