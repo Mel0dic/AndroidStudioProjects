@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,7 +22,7 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
     private String wordToGuess;
-    private List<String> wordList = new ArrayList<>();
+    private List<Character> worngLetters = new ArrayList<>();
     private Random rand = new Random();
     private ArrayList<String> dictionary;
     private int wordLength; //Set elsewhere
@@ -28,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private Button enterTextButton;
     private EditText guessEntered;
     private int wordComplete = 0;
+    private TextView incorrectLetters;
+    private int wrongGuessesMade = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         enterTextButton = findViewById(R.id.enterGuess);
         guessEntered = findViewById(R.id.inputGuess);
+        incorrectLetters = findViewById(R.id.wrongLettersGuessed);
 
         enterTextButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -107,9 +112,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonClicked(){
-        String guess = guessEntered.getText().toString();
+        String guess = guessEntered.getText().toString().toLowerCase();
         char singleLetterGuess = guess.charAt(0);
         guess(singleLetterGuess);
+        guessEntered.setText("");
+
+        if(wrongGuessesMade == 4){
+            recreate();
+        }else if(wordComplete == wordLength){
+            recreate();
+        }
     }
 
     public void guess(char guess){
@@ -121,7 +133,19 @@ public class MainActivity extends AppCompatActivity {
 				}
 			}
 			setGuessedLetterLabel();
+        }else{
+            worngLetters.add(guess);
+            wrongLettersUpdate();
+            wrongGuessesMade++;
         }
+    }
+
+    public void wrongLettersUpdate(){
+        String theGuesses = "You have guessed: ";
+        for(char i : worngLetters){
+            theGuesses += String.format("%c,", i);
+        }
+        incorrectLetters.setText(theGuesses);
     }
 
 }

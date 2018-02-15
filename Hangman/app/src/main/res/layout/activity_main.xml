@@ -40,9 +40,18 @@
         android:id="@+id/guessedLetters"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/enterGuess"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="9dp"
-        android:textSize="30sp"
-        android:text="_ _ _ _ _ _ _" />
+        android:layout_marginTop="15dp"
+        android:text="_ _ _ _ _ _ _"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/wrongLettersGuessed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Wrong guesses will appear here"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"/>
 </RelativeLayout>
