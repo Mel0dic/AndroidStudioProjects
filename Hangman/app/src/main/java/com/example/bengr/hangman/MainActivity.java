@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Function when button to enter guess is clicked
     public void buttonClicked(){
-        //Get the string from the textarea and turn it to a lower case string
+        //Get the string from the text area and turn it to a lower case string
         String guess = guessEntered.getText().toString().toLowerCase();
         //Take the first char in word and take that as the guess
         char singleLetterGuess = guess.charAt(0);
