@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Hangman</string>
+    <string name="guess_prompt">Enter Your Guess Here</string>
+    <string name="editTextHint">e.g S</string>
+    <string name="enterButton">Enter</string>
+    <string name="hardCoded_s">_ _ _ _ _ _ _</string>
+    <string name="wrongGuesses">Wrong guesses will appear here</string>
+    <string name="theWordWas">Unlucky the word was: </string>
+    <string name="restart">Restart</string>
 </resources>

@@ -14,7 +14,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="19dp"
         android:gravity="center"
-        android:text="Enter Your Guess Here"
+        android:text="@string/guess_prompt"
         android:textSize="20sp"/>
 
     <EditText
@@ -25,7 +25,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
         android:inputType="textPersonName"
-        android:hint="e.g S" />
+        android:hint="@string/editTextHint" />
 
     <Button
         android:id="@+id/enterGuess"
@@ -34,7 +34,7 @@
         android:layout_below="@+id/inputGuess"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:text="Enter" />
+        android:text="@string/enterButton" />
 
     <TextView
         android:id="@+id/guessedLetters"
@@ -43,7 +43,7 @@
         android:layout_below="@+id/enterGuess"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
-        android:text="_ _ _ _ _ _ _"
+        android:text="@string/hardCoded_s"
         android:textSize="30sp" />
 
     <TextView
@@ -51,7 +51,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="Wrong guesses will appear here"
+        android:text="@string/wrongGuesses"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="15dp"/>
+
 </RelativeLayout>
