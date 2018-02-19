@@ -10,8 +10,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCustomDrawableView = new CustomDrawableView(this);
+        setContentView(R.layout.activity_main);
 
+        mCustomDrawableView = new CustomDrawableView(this);
         setContentView(mCustomDrawableView);
     }
 }
