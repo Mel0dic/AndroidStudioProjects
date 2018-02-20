@@ -35,4 +35,5 @@ public class CustomDrawableView extends View {
     protected void onDraw(Canvas canvas) {
         mDrawable.draw(canvas);
     }
+
 }
