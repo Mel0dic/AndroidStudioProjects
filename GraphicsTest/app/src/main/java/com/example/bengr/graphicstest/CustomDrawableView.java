@@ -14,14 +14,13 @@ import android.view.View;
 public class CustomDrawableView extends View {
 
     private ShapeDrawable mDrawable;
+    private int count = 0;
 
     public CustomDrawableView(Context context) {
         super(context);
 
         int x = getHeight() / 2;
         int y = getWidth() / 2;
-        System.out.println(x);
-        System.out.println(y);
         int width = 500;
         int height = 500;
 
@@ -30,6 +29,7 @@ public class CustomDrawableView extends View {
         mDrawable.getPaint().setColor(Color.RED);
         // If the bounds aren't set, the shape can't be drawn.
         mDrawable.setBounds(x, y, x + width, y + height);
+
     }
 
     protected void onDraw(Canvas canvas) {
