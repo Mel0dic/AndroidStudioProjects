@@ -7,20 +7,15 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.view.View;
 
-/**
- * Created by bengr on 19/02/2018.
- */
-
 public class CustomDrawableView extends View {
 
     private ShapeDrawable mDrawable;
-    private int count = 0;
 
     public CustomDrawableView(Context context) {
         super(context);
 
-        int x = getHeight() / 2;
-        int y = getWidth() / 2;
+        int x = 300;
+        int y = 10;
         int width = 500;
         int height = 500;
 

@@ -1,7 +1,8 @@
 package com.example.bengr.graphicstest;
 
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
@@ -17,4 +18,5 @@ public class MainActivity extends AppCompatActivity {
         mCustomDrawableView = new CustomDrawableView(this);
         addContentView(mCustomDrawableView, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
+
 }
