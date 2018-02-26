@@ -5,7 +5,7 @@
     <item
         android:id="@+id/mainSwitch"
         android:title=""
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         app:actionLayout="@layout/use_switch"/>
 
 </menu>

@@ -37,9 +37,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    Toast.makeText(getBaseContext(), "Working", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), "Decrypt", Toast.LENGTH_SHORT).show();
                     setContentView(R.layout.activity_decrypt);
                 }else{
+                    Toast.makeText(getBaseContext(), "Decrypt", Toast.LENGTH_SHORT).show();
                     setContentView(R.layout.activity_main);
                 }
             }
@@ -83,3 +84,4 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
+
