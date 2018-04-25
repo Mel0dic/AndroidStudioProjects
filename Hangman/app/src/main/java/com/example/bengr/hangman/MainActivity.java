@@ -172,8 +172,14 @@ public class MainActivity extends AppCompatActivity {
     //Update the wrong letters label
     public void wrongLettersUpdate(){
         String theGuesses = "You have guessed: ";
+        int count = 0;
         for(char i : wrongLetters){
-            theGuesses += String.format("%c,", i);
+            if(count == 0) {
+                theGuesses += String.format("%c", i);
+                count++;
+            }else{
+                theGuesses += String.format(", %c", i);
+            }
         }
         incorrectLetters.setText(theGuesses);
     }
