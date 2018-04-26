@@ -1,13 +1,18 @@
 package com.example.bengr.testingrandomthings;
 
+import android.content.Context;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements GestureDetector.OnGestureListener,
         GestureDetector.OnDoubleTapListener{
@@ -46,6 +51,22 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.SearchButtonMain){
+            Context context = MainActivity.this;
+            String textToToast = "Search Bar Clicked";
+            Toast.makeText(context, textToToast, Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
