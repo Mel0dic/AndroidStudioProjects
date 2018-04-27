@@ -11,6 +11,7 @@ import android.view.View;
  */
 
 public class CustomDrawableView extends View {
+
     private ShapeDrawable mDrawable;
 
     public CustomDrawableView(Context context) {
