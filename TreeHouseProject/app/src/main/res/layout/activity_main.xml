@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     android:background="#51b46d"
-    android:padding="40dp">
+    android:padding="40dp"
+    android:id="@+id/mainActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -30,6 +31,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:text="@string/newFact"
-        android:background="#FFFFFF" />
+        android:background="#FFFFFF"
+        android:textColor="#51b46d"/>
 
 </RelativeLayout>
