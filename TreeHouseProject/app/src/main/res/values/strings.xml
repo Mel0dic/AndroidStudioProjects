@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">TreeHouseProject</string>
+    <string name="didYouKnow">Did you know?</string>
+    <string name="fact">Ants stretch in the morning.</string>
+    <string name="newFact">Get New Fact</string>
+</resources>
