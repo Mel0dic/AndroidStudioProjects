@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CounterApp</string>
+    <string name="beginningValue">0</string>
+    <string name="buttonString">+1</string>
+</resources>
