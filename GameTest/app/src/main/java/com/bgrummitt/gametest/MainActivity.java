@@ -27,11 +27,4 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public class backgroundMainScreen extends AsyncTask<Drawable, int[][], Void>{
-        @Override
-        protected Void doInBackground(Drawable... drawables) {
-            return null;
-        }
-    }
-
 }
