@@ -20,7 +20,8 @@
         </activity>
         <activity
             android:name=".ui.StoryActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:parentActivityName=".ui.MainActivity">
 
         </activity>
     </application>

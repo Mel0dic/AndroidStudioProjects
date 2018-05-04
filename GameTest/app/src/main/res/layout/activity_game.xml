@@ -4,6 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Game.game">
+    tools:context=".UI.GameActivity"
+    android:background="#87CEEB">
+
+    <ImageButton
+        android:id="@+id/mainMenuButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@null"
+        android:clickable="true"
+        android:contentDescription="@string/button_to_return_to_main_menu"
+        android:focusable="true"
+        android:scaleType="fitXY"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_arrow_back_black_24dp" />
 
 </android.support.constraint.ConstraintLayout>

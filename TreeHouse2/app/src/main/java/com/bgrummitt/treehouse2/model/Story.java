@@ -13,6 +13,11 @@ public class Story {
                 new Choice(R.string.page0_choice1, 1),
                 new Choice(R.string.page0_choice2, 2));
 
+        pages[1] = new Page(R.drawable.page1,
+                R.string.page1,
+                new Choice(R.string.page1_choice1, 3),
+                new Choice(R.string.page1_choice2, 4));
+
         pages[2] = new Page(R.drawable.page2,
                 R.string.page2,
                 new Choice(R.string.page2_choice1, 4),
@@ -37,6 +42,7 @@ public class Story {
         if(pageNumber >= pages.length){
             pageNumber = 0;
         }
+
         return pages[pageNumber];
     }
 }

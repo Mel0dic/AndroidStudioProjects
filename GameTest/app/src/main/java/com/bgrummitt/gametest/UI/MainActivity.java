@@ -7,25 +7,24 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.bgrummitt.gametest.Game.game;
 import com.bgrummitt.gametest.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageButton buttonTemplateTest;
+    private ImageButton buttonTemplateTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        buttonTemplateTest = findViewById(R.id.testingButton);
+        buttonTemplateTest = findViewById(R.id.startGameButton);
 
         buttonTemplateTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(MainActivity.this, "Button Pressed", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, game.class);
+                Intent intent = new Intent(MainActivity.this, GameActivity.class);
                 startActivity(intent);
             }
         });
