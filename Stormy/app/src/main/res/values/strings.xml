@@ -2,6 +2,14 @@
     <string name="app_name">Stormy</string>
     <string name="error_title">Oops! Sorry</string>
     <string name="error_message">An Error Has Occurred. Please try again</string>
-    <string name="error_button_ok_text">Ok</string>
+    <string name="error_button_ok_text">OK</string>
     <string name="network_unavailable">Sorry network is unavailable</string>
+    <string name="placeHolderTemp">100</string>
+    <string name="dark_sky_message"><a href="https://darksky.net/poweredby">Powered By Dark Sky</a></string>
+    <string name="degree_image_description">Degrees Symbol</string>
+    <string name="default_location_value">Norwich, Norfolk EN</string>
+    <string name="icon_image_view_description">Visual representation of weather</string>
+    <string name="default_humidity_label">Humidity</string>
+    <string name="precip_label">Rain?</string>
+    <string name="refresh_description">Button to refresh data</string>
 </resources>
