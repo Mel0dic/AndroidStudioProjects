@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UI.GameActivity"
-    android:background="#87CEEB">
+    android:background="#87CEEB"
+    android:id="@+id/gameActivity">
 
     <ImageButton
         android:id="@+id/mainMenuButton"

@@ -1,9 +1,11 @@
 package com.bgrummitt.gametest.UI;
 
 import android.content.Intent;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -18,9 +20,10 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
+        setContentView(new GameView(this));
 
-        backToMainMenuButton = findViewById(R.id.mainMenuButton);
+        backToMainMenuButton = new ImageButton(this);
+        backToMainMenuButton.setImageResource(R.drawable.ic_arrow_back_black_24dp);
 
         backToMainMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -29,5 +32,12 @@ public class GameActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return super.onTouchEvent(event);
     }
 }
