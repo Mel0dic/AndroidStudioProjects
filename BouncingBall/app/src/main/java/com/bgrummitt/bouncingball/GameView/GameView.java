@@ -4,18 +4,22 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.bgrummitt.bouncingball.Game.Ball;
+import com.bgrummitt.bouncingball.Game.SinglePlayerPong;
 import com.bgrummitt.bouncingball.R;
 
 //Surface view holds the canvas
 public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
+    private static final String TAG = GameView.class.getSimpleName();
+
     private MainThread thread;
-    private Ball ball;
+    private SinglePlayerPong game;
 
     public GameView(Context context) {
         super(context);
@@ -23,16 +27,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         //This allows you intercept events
         getHolder().addCallback(this);
 
-        //Create new thread class with the SurfaceHolder and context
-        thread = new MainThread(getHolder(), this);
-        //Keep the inputs on this thread and not on the new one
-        setFocusable(true);
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
 
-        ball = new Ball(BitmapFactory.decodeResource(getResources(), R.drawable.ball), 100, 100);
+        //Create new thread class with the SurfaceHolder and context
+        thread = new MainThread(getHolder(), this);
+        //Keep the inputs on this thread and not on the new one
+        setFocusable(true);
+
+        game = new SinglePlayerPong(getResources());
 
         //Start the games update infinite loop
         thread.setRunning(true);
@@ -46,13 +51,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        //To stop the process it may take a few attempts
+        //To stop the thread it may take a few attempts
         boolean retry = true;
         while(retry){
-            try{
+            try {
                 thread.setRunning(false);
                 thread.join();
-            }catch (InterruptedException e){
+            } catch(InterruptedException e){
                 e.printStackTrace();
             }
             retry = false;
@@ -60,14 +65,20 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void update(){
-        ball.update();
+        game.update();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        ball.resetPosition();
+        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+            game.screenTouched(event.getX(), event.getY());
+        }else if(event.getAction() == MotionEvent.ACTION_UP){
+            game.screenReleased(event.getX(), event.getY());
+        }
         return super.onTouchEvent(event);
     }
+
+
 
     @Override
     public void draw(Canvas canvas) {
@@ -75,7 +86,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
         if(canvas != null){
             canvas.drawColor(Color.WHITE);
-            ball.draw(canvas);
+            game.draw(canvas);
         }
     }
 }
