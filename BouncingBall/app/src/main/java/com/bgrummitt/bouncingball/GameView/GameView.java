@@ -1,24 +1,29 @@
-package com.bgrummitt.bouncingball;
+package com.bgrummitt.bouncingball.GameView;
 
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.bgrummitt.bouncingball.Game.MainThread;
+import com.bgrummitt.bouncingball.Game.Ball;
+import com.bgrummitt.bouncingball.R;
 
+//Surface view holds the canvas
 public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     private MainThread thread;
+    private Ball ball;
 
     public GameView(Context context) {
         super(context);
 
-
+        //This allows you intercept events
         getHolder().addCallback(this);
 
-        //Create new thread class with ???? and context
+        //Create new thread class with the SurfaceHolder and context
         thread = new MainThread(getHolder(), this);
         //Keep the inputs on this thread and not on the new one
         setFocusable(true);
@@ -26,6 +31,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+
+        ball = new Ball(BitmapFactory.decodeResource(getResources(), R.drawable.ball), 100, 100);
+
         //Start the games update infinite loop
         thread.setRunning(true);
         thread.start();
@@ -52,11 +60,22 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void update(){
+        ball.update();
+    }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        ball.resetPosition();
+        return super.onTouchEvent(event);
     }
 
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
+
+        if(canvas != null){
+            canvas.drawColor(Color.WHITE);
+            ball.draw(canvas);
+        }
     }
 }
