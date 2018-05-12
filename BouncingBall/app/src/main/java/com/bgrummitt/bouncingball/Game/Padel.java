@@ -18,13 +18,19 @@ public class Padel {
     private int padelSpeed;
     private int padelDirection;
     private Boolean movePadel = false;
+    private int imageWidth;
+    private int imageHeight;
+    private int wallSize;
 
-    public Padel(Bitmap img){
+    public Padel(Bitmap img, int wallSize){
         image = img;
-        x = (screenWidth / 2) - (image.getWidth() / 2);
+        imageWidth = image.getWidth();
+        imageHeight = image.getHeight();
+        x = (screenWidth / 2) - (imageWidth / 2);
         y = (screenHeight - 50);
         padelDirection = 1;
         padelSpeed = 10;
+        this.wallSize = wallSize;
     }
 
     public void moveTo(float moveTo, Boolean toMove){
@@ -37,11 +43,11 @@ public class Padel {
     }
 
     public void update(){
-        if((x > 0) && ((x < screenWidth - image.getWidth())) && movePadel){
+        if((x > 0) && ((x < screenWidth - imageWidth) && movePadel)){
             x += (padelSpeed * padelDirection);
         }else if(x <= 0 && padelDirection == 1 && movePadel){
             x += (padelSpeed * padelDirection);
-        }else if((((x - 4) >= screenWidth - image.getWidth())) && padelDirection == -1 && movePadel){
+        }else if((((x - 4) >= screenWidth - imageWidth)) && padelDirection == -1 && movePadel){
             x += (padelSpeed * padelDirection);
         }
     }
@@ -50,5 +56,20 @@ public class Padel {
         canvas.drawBitmap(image, x, y, null);
     }
 
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getImageWidth(){
+        return imageWidth;
+    }
+
+    public int getImageHeight(){
+        return imageHeight;
+    }
 
 }

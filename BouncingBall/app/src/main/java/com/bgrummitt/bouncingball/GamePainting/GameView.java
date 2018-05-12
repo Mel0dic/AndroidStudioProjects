@@ -1,17 +1,13 @@
-package com.bgrummitt.bouncingball.GameView;
+package com.bgrummitt.bouncingball.GamePainting;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.bgrummitt.bouncingball.Game.Ball;
 import com.bgrummitt.bouncingball.Game.SinglePlayerPong;
-import com.bgrummitt.bouncingball.R;
 
 //Surface view holds the canvas
 public class GameView extends SurfaceView implements SurfaceHolder.Callback{

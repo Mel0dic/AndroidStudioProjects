@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.bgrummitt.bouncingball.GameView.GameView;
+import com.bgrummitt.bouncingball.GamePainting.GameView;
 
 public class GameActivity extends Activity {
 

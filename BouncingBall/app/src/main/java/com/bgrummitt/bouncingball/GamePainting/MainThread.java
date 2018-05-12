@@ -1,10 +1,8 @@
-package com.bgrummitt.bouncingball.GameView;
+package com.bgrummitt.bouncingball.GamePainting;
 
 import android.graphics.Canvas;
 import android.util.Log;
 import android.view.SurfaceHolder;
-
-import com.bgrummitt.bouncingball.GameView.GameView;
 
 public class MainThread extends Thread {
 
