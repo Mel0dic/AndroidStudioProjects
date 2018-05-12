@@ -21,7 +21,7 @@ public class Padel {
 
     public Padel(Bitmap img){
         image = img;
-        x = screenWidth / 2;
+        x = (screenWidth / 2) - (image.getWidth() / 2);
         y = (screenHeight - 50);
         padelDirection = 1;
         padelSpeed = 10;
@@ -37,13 +37,11 @@ public class Padel {
     }
 
     public void update(){
-//        Log.d(TAG, Integer.toString(screenWidth - (image.getHeight() * 2)));
-//        Log.d(TAG, Integer.toString(x));
-        if((x > 0) && (x < (screenWidth - (image.getHeight() * 2))) && movePadel){
+        if((x > 0) && ((x < screenWidth - image.getWidth())) && movePadel){
             x += (padelSpeed * padelDirection);
-        }else if(x == 0 && padelDirection == 1 && movePadel){
+        }else if(x <= 0 && padelDirection == 1 && movePadel){
             x += (padelSpeed * padelDirection);
-        }else if(((x - 8) == (screenWidth - (image.getHeight() * 2))) && padelDirection == -1 && movePadel){
+        }else if((((x - 4) >= screenWidth - image.getWidth())) && padelDirection == -1 && movePadel){
             x += (padelSpeed * padelDirection);
         }
     }

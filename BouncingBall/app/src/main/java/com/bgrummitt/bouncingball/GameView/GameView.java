@@ -75,7 +75,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         }else if(event.getAction() == MotionEvent.ACTION_UP){
             game.screenReleased(event.getX(), event.getY());
         }
-        return super.onTouchEvent(event);
+        return true;
     }
 
 
