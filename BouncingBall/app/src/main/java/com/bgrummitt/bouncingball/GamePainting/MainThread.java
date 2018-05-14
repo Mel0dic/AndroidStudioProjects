@@ -8,7 +8,7 @@ public class MainThread extends Thread {
 
     private final String TAG = MainThread.class.getSimpleName();
 
-    private SurfaceHolder surfaceHolder;
+    private final SurfaceHolder surfaceHolder;
     private GameView gameView;
     private Boolean running;
     private static Canvas canvas;
@@ -42,8 +42,9 @@ public class MainThread extends Thread {
             canvas = null;
 
             try{
-                //Canvas must be locked to prevent multiple threads drawing at one point
+                //Surface is locked for rendering and a fresh canvas instance is returned that we can use.
                 canvas = this.surfaceHolder.lockCanvas();
+
                 synchronized (surfaceHolder){
                     //Update element positions
                     this.gameView.update();
@@ -54,6 +55,7 @@ public class MainThread extends Thread {
                 //Finally will make sure this code executes even if there is an exception
                 if(canvas != null){
                     try{
+                        //This canvas must be one receive from .lockCanvas()
                         surfaceHolder.unlockCanvasAndPost(canvas);
                     }catch (Exception e){
                         e.printStackTrace();
@@ -70,7 +72,7 @@ public class MainThread extends Thread {
 
             totalTime += System.nanoTime() - startTime;
             frameCount++;
-            if (frameCount == targetFPS)        {
+            if (frameCount == targetFPS){
                 averageFPS = 1000 / ((totalTime / frameCount) / 1000000);
                 frameCount = 0;
                 totalTime = 0;
