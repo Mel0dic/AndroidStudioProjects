@@ -14,12 +14,16 @@ public class Ball {
     private int xVelocity = 10;
     private int yVelocity = 5;
     private int wallSize;
+    private int imageHeight;
+    private int imageWidth;
 
     public Ball(Bitmap bmp, int x, int y, int wallSize){
         image = bmp;
         this.x = x;
         this.y = y;
         this.wallSize = wallSize;
+        imageWidth = image.getWidth();
+        imageHeight = image.getHeight();
     }
 
     public void update(){
@@ -29,11 +33,11 @@ public class Ball {
         }else{
             x += xVelocity;
             y += yVelocity;
-            if((x > (screenWidth - image.getWidth() - wallSize)) || (x < (0 + wallSize + 1)) ){
+            if((x > (screenWidth - imageWidth - wallSize)) || (x < (0 + wallSize + 1)) ){
                 xVelocity *= -1;
             }
             //TODO remove > screen height
-            if((y - 100 > screenHeight - image.getHeight())|| (y < (0 + wallSize + 1))){
+            if((y - 100 > screenHeight - imageHeight)|| (y < (0 + wallSize + 1))){
                 yVelocity *= -1;
             }
         }
@@ -41,10 +45,18 @@ public class Ball {
 
     public void hitPadel(Padel padel){
         int padelX = padel.getX();
-        // && (x >= padelX) && (x <= (padelX + padel.getImageWidth()));
-        if(padel.getY() - padel.getImageHeight() <= y && padel.getY() >= y && (x >= padelX) && (x <= (padelX + padel.getImageWidth()))){
+        int padelY = padel.getY();
+        //If ball hits top
+        if(padelY - padel.getImageHeight() <= y && padelY >= y && (x >= padelX) && (x <= (padelX + padel.getImageWidth()))){
             yVelocity *= -1;
         }
+        //If ball hits sides
+        else if((padelY + padel.getImageHeight()) >= y && padelY <= (y + imageHeight) && (padelX + padel.getImageWidth() >= x && padelX <= x + imageWidth)){
+            xVelocity *= -1;
+        }
+//        else if(){
+//
+//        }
     }
 
     public void draw(Canvas canvas){

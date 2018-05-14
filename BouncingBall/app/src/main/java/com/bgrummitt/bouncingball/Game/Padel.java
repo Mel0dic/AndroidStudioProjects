@@ -7,7 +7,7 @@ import android.util.Log;
 
 public class Padel {
 
-    final private static String TAG = Padel.class.getSimpleName();
+    final static private String TAG = Padel.class.getSimpleName();
 
     final static private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     final static private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
@@ -43,11 +43,11 @@ public class Padel {
     }
 
     public void update(){
-        if((x > 0) && ((x < screenWidth - imageWidth) && movePadel)){
+        if((x - wallSize > 0) && (((x + wallSize) < screenWidth - imageWidth) && movePadel)){
             x += (padelSpeed * padelDirection);
-        }else if(x <= 0 && padelDirection == 1 && movePadel){
+        }else if((x - wallSize) <= 0 && padelDirection == 1 && movePadel){
             x += (padelSpeed * padelDirection);
-        }else if((((x - 4) >= screenWidth - imageWidth)) && padelDirection == -1 && movePadel){
+        }else if((((x - 4 + wallSize) >= screenWidth - imageWidth)) && padelDirection == -1 && movePadel){
             x += (padelSpeed * padelDirection);
         }
     }
