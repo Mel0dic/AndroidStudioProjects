@@ -7,7 +7,7 @@ import java.util.Random;
 public class randomColor {
 
     private static Random random = new Random();
-    private static String[] colors = {"#39add1", // light blue
+    public static String[] colors = {"#39add1", // light blue
             "#3079ab", // dark blue
             "#c25975", // mauve
             "#e15258", // red
