@@ -42,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
                 newNote();
             }
         });
+
+        mListAdapter = new ListAdapter(this, notes);
+        listView.setAdapter(mListAdapter);
     }
 
     @Override
@@ -91,12 +94,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void makeNewNote(String subject, String note){
+        refreshListAdapter();
+
         notes.add(new Note(subject, note));
+
         mListAdapter = new ListAdapter(this, notes);
         listView.setAdapter(mListAdapter);
     }
 
     public void refreshListAdapter(){
+        notes = mListAdapter.getmNotes();
+        mListAdapter = new ListAdapter(this, notes);
         listView.setAdapter(mListAdapter);
     }
 

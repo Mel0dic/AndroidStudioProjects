@@ -64,6 +64,10 @@ public class ListAdapter extends BaseAdapter {
         return convertView;
     }
 
+    public List<Note> getmNotes(){
+        return mNotes;
+    }
+
     private static class ViewHolder{
         public ImageButton deleteButton;
         public TextView subjectTextView;
