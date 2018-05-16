@@ -13,23 +13,27 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends ListActivity {
+public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
     private List<Note> notes = new ArrayList<>();
+    private ListAdapter mListAdapter;
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
+        listView =  findViewById(R.id.list);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -88,7 +92,12 @@ public class MainActivity extends ListActivity {
 
     public void makeNewNote(String subject, String note){
         notes.add(new Note(subject, note));
-        Log.v(TAG, subject);
+        mListAdapter = new ListAdapter(this, notes);
+        listView.setAdapter(mListAdapter);
+    }
+
+    public void refreshListAdapter(){
+        listView.setAdapter(mListAdapter);
     }
 
 }
