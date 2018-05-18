@@ -25,4 +25,5 @@ public class Note {
     public void setNoteBody(String noteBody) {
         this.noteBody = noteBody;
     }
+
 }
