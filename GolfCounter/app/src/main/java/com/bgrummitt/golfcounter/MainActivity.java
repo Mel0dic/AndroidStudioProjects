@@ -11,7 +11,7 @@ import android.view.MenuItem;
 public class MainActivity extends ListActivity {
 
     private static final String PREFS_FILE = "com.bgrummitt.golfcounter.preferences";
-    private static final String KEY_STROKECOUNT = "KEY_STROKE_COUNT_";
+    private static final String KEY_STROKE_COUNT = "KEY_STROKE_COUNT_";
     private Hole[] holes = new Hole[18];
     private ListAdapter mListAdapter;
     private SharedPreferences mSharedPreferences;
@@ -27,7 +27,7 @@ public class MainActivity extends ListActivity {
 
         int score;
         for(int i = 0; i < 18; i++){
-            score = mSharedPreferences.getInt(KEY_STROKECOUNT + i, 0);
+            score = mSharedPreferences.getInt(KEY_STROKE_COUNT + i, 0);
             holes[i] = new Hole((i + 1), score);
         }
 
@@ -38,7 +38,7 @@ public class MainActivity extends ListActivity {
     @Override
     protected void onPause() {
         for(int i = 0; i < holes.length; i++){
-            mEditor.putInt(KEY_STROKECOUNT + i, holes[i].getScore());
+            mEditor.putInt(KEY_STROKE_COUNT + i, holes[i].getScore());
         }
         mEditor.apply();
         super.onPause();
