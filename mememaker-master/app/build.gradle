@@ -21,7 +21,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile files('libs/commons-io-2.4.jar')
-    compile 'com.android.support:support-v13:19.0.+'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation files('libs/commons-io-2.4.jar')
+    implementation 'com.android.support:support-v13:19.0.+'
 }
