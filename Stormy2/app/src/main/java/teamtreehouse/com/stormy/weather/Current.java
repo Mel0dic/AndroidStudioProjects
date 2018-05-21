@@ -1,13 +1,15 @@
-package teamtreehouse.com.stormy;
+package teamtreehouse.com.stormy.weather;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import teamtreehouse.com.stormy.R;
+
 /**
  * Created by benjakuben on 12/8/14.
  */
-public class CurrentWeather {
+public class Current {
     private String mIcon;
     private long mTime;
     private double mTemperature;

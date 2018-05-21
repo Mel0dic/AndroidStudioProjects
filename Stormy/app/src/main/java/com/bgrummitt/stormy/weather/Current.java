@@ -1,10 +1,12 @@
-package com.bgrummitt.stormy;
+package com.bgrummitt.stormy.weather;
+
+import com.bgrummitt.stormy.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-public class CurrentWeather {
+public class Current {
 
     private String locationLabel;
     private String icon;
@@ -15,9 +17,9 @@ public class CurrentWeather {
     private String summary;
     private String timeZone;
 
-    public CurrentWeather() {}
+    public Current() {}
 
-    public CurrentWeather(String locationLabel, String icon, long time, float temperature, double humidity, double precipChance, String summary, String timeZone) {
+    public Current(String locationLabel, String icon, long time, float temperature, double humidity, double precipChance, String summary, String timeZone) {
         this.locationLabel = locationLabel;
         this.icon = icon;
         this.time = time;
@@ -53,42 +55,7 @@ public class CurrentWeather {
     }
 
     public int getIconID(){
-        //clear-day, clear-night, rain, snow, sleet, wind, fog, cloudy, partly-cloudy-day, or partly-cloudy-night
-
-        int iconId = R.drawable.clear_day;
-
-        switch (icon){
-            case "clear-day":
-                iconId = R.drawable.clear_day;
-                break;
-            case "clear-night":
-                iconId = R.drawable.clear_night;
-            case "rain":
-                iconId = R.drawable.rain;
-                break;
-            case "snow":
-                iconId = R.drawable.snow;
-                break;
-            case "sleet":
-                iconId = R.drawable.sleet;
-                break;
-            case "wind":
-                iconId = R.drawable.wind;
-                break;
-            case "fog":
-                iconId = R.drawable.fog;
-                break;
-            case "cloudy":
-                iconId = R.drawable.cloudy;
-                break;
-            case "partly-cloudy-day":
-                iconId = R.drawable.partly_cloudy;
-                break;
-            case "partly-cloudy-night":
-                iconId = R.drawable.cloudy_night;
-        }
-
-        return iconId;
+        return Forecast.getIconID(icon);
     }
 
     public long getTime() {

@@ -8,8 +8,9 @@
     <string name="dark_sky_message"><a href="https://darksky.net/poweredby">Powered By Dark Sky</a></string>
     <string name="degree_image_description">Degrees Symbol</string>
     <string name="default_location_value">Norwich, Norfolk EN</string>
-    <string name="icon_image_view_description">Visual representation of weather</string>
+    <string name="icon_image_view_description">Visual representation of current</string>
     <string name="default_humidity_label">Humidity</string>
     <string name="precip_label">Rain?</string>
     <string name="refresh_description">Button to refresh data</string>
+    <string name="no_daily_forecast_data">There is no data to display</string>
 </resources>
