@@ -32,6 +32,4 @@ public class DailyForecastActivity extends ListActivity {
         setListAdapter(adapter);
     }
 
-
-
 }

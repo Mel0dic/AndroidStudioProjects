@@ -159,7 +159,9 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:text="@string/dark_sky_message"
+            android:linksClickable="true"
             android:textColor="@color/halfWhite"
+            android:textColorLink="@color/halfWhite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
