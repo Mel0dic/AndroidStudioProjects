@@ -12,7 +12,7 @@ import com.bgrummitt.bouncingball.R;
 
 public class SinglePlayerPong {
 
-    private static final String TAG = GameView.class.getSimpleName();
+    private static final String TAG = SinglePlayerPong.class.getSimpleName();
     final static private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     final static private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
