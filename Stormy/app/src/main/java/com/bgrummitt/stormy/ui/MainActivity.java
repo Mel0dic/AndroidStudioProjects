@@ -218,16 +218,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startHourlyActivity(View view){
-        Intent intent = new Intent(this, HourlyForecastActivity.class);
-        intent.putExtra(HOURLY_FORECAST, mForecast.getHourlyForecast());
-        startActivity(intent);
-        Log.v(TAG, "Start hourly activity");
+        if(mForecast != null) {
+            Intent intent = new Intent(this, HourlyForecastActivity.class);
+            intent.putExtra(HOURLY_FORECAST, mForecast.getHourlyForecast());
+            startActivity(intent);
+            Log.v(TAG, "Start hourly activity");
+        }else{
+            alertUserAboutError();
+        }
     }
 
     public void startDailyActivity(View view){
-        Intent intent = new Intent(this, DailyForecastActivity.class);
-        intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
-        startActivity(intent);
+        if(mForecast != null) {
+            Intent intent = new Intent(this, DailyForecastActivity.class);
+            intent.putExtra(DAILY_FORECAST, mForecast.getDailyForecast());
+            startActivity(intent);
+        }else{
+            alertUserAboutError();
+        }
     }
 
 }

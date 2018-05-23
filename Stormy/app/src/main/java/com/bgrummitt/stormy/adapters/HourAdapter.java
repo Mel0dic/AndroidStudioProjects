@@ -1,5 +1,6 @@
 package com.bgrummitt.stormy.adapters;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bgrummitt.stormy.R;
 import com.bgrummitt.stormy.weather.Hour;
@@ -14,12 +16,14 @@ import com.bgrummitt.stormy.weather.Hour;
 public class HourAdapter extends RecyclerView.Adapter<HourAdapter.HourViewHolder> {
 
     private Hour[] mHours;
+    private Context mContext;
 
-    public HourAdapter(Hour[] hours){
+    public HourAdapter(Context context, Hour[] hours){
+        mContext = context;
         mHours = hours;
     }
 
-    public class HourViewHolder extends RecyclerView.ViewHolder{
+    public class HourViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         public TextView mTimeLabel;
         public TextView mSummaryLabel;
@@ -33,6 +37,8 @@ public class HourAdapter extends RecyclerView.Adapter<HourAdapter.HourViewHolder
             mSummaryLabel = itemView.findViewById(R.id.summaryLabel);
             mTempLabel = itemView.findViewById(R.id.temperatureLabel);
             mIconImageView = itemView.findViewById(R.id.iconImageView);
+
+            itemView.setOnClickListener(this);
         }
 
         public void bindHour(Hour hour){
@@ -42,6 +48,17 @@ public class HourAdapter extends RecyclerView.Adapter<HourAdapter.HourViewHolder
             mIconImageView.setImageResource(hour.getIconId());
         }
 
+        @Override
+        public void onClick(View v) {
+            String time = mTimeLabel.getText().toString();
+            String temp = mTempLabel.getText().toString();
+            String summary = mSummaryLabel.getText().toString();
+            String message = String.format("At %s it will be %s and %s",
+                    time,
+                    temp,
+                    summary);
+            Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @NonNull

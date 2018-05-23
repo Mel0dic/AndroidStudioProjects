@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshListAdapter(){
-        notes = mListAdapter.getmNotes();
+        notes = mListAdapter.getNotes();
         mListAdapter = new ListAdapter(this, notes);
         mListAdapter.notifyDataSetChanged();
         listView.setAdapter(mListAdapter);

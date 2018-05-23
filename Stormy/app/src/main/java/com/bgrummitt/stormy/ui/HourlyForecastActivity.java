@@ -30,7 +30,7 @@ public class HourlyForecastActivity extends AppCompatActivity {
 
         mRecyclerView = findViewById(R.id.recyclerView);
 
-        HourAdapter hourAdapter = new HourAdapter(mHours);
+        HourAdapter hourAdapter = new HourAdapter(this, mHours);
         mRecyclerView.setAdapter(hourAdapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);

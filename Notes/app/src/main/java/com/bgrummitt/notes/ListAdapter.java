@@ -64,7 +64,7 @@ public class ListAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public List<Note> getmNotes(){
+    public List<Note> getNotes(){
         return mNotes;
     }
 
