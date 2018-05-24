@@ -34,6 +34,7 @@ public class Bird {
     private long startTime;
 
     public void update(){
+        //If the bird has been flapping for more than 200 milliseconds
         if(isInJump && (System.currentTimeMillis() - startTime) >= 200){
             birdDir = gravity;
             isInJump = false;
