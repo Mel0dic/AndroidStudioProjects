@@ -15,6 +15,8 @@ public class FlappyBird {
     final static private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
     private Bird bird;
+    private Pipes pipeOne;
+    private Pipes pipeTwo;
     private Bitmap background;
     private Bitmap floor;
     private int touch = 0;
@@ -34,6 +36,13 @@ public class FlappyBird {
         birdBMP2 =  Bitmap.createScaledBitmap(birdBMP2, screenWidth / 9, screenHeight / 20, true);
 
         bird = new Bird(birdBMP1, birdBMP2);
+
+        Bitmap pipeTop = BitmapFactory.decodeResource(resources, R.drawable.toptube);
+        Bitmap pipeBottom = BitmapFactory.decodeResource(resources, R.drawable.bottomtube);
+        pipeTop = Bitmap.createScaledBitmap(pipeTop, (screenWidth / 10), (screenHeight / 3), true);
+        pipeBottom = Bitmap.createScaledBitmap(pipeBottom, (screenWidth / 10), (screenHeight / 3), true);
+        pipeOne = new Pipes(pipeTop, pipeBottom, screenWidth, (screenWidth / 540));
+        pipeTwo = new Pipes(pipeTop, pipeBottom, screenWidth + 500, (screenWidth / 540));
     }
 
     public void startGame(){
@@ -50,6 +59,8 @@ public class FlappyBird {
 
     public void update(){
         bird.update();
+        pipeOne.update();
+        pipeTwo.update();
         //For making the floor infinitely scroll
         floorX -= (screenWidth / 540);
         if(floorX <= -(screenWidth / 13.5)){
@@ -60,6 +71,8 @@ public class FlappyBird {
     public void draw(Canvas canvas){
         canvas.drawBitmap(background, 0, 0, null);
         canvas.drawBitmap(floor, floorX, (screenHeight - screenHeight / 10), null);
+        pipeOne.draw(canvas);
+        pipeTwo.draw(canvas);
         bird.draw(canvas);
     }
 
