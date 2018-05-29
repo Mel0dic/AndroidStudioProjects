@@ -3,8 +3,8 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.bgrummitt.flappybirdnolibrary"
-        minSdkVersion 19
+        applicationId "com.bgrummitt.tetris"
+        minSdkVersion 21
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"

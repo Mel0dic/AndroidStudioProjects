@@ -30,7 +30,7 @@ public class FlappyBird {
         floor = Bitmap.createScaledBitmap(floor, screenWidth + (int)(screenWidth / 13.5), (screenHeight / 10), true);
 
         Bitmap birdBMP1 = BitmapFactory.decodeResource(resources, R.drawable.bird);
-        Bitmap birdBMP2 = BitmapFactory.decodeResource(resources, R.drawable.bird);
+        Bitmap birdBMP2 = BitmapFactory.decodeResource(resources, R.drawable.bird2);
 
         birdBMP1 =  Bitmap.createScaledBitmap(birdBMP1, screenWidth / 9, screenHeight / 20, true);
         birdBMP2 =  Bitmap.createScaledBitmap(birdBMP2, screenWidth / 9, screenHeight / 20, true);
