@@ -1,7 +1,6 @@
-package com.bgrummitt.tetris.controller.Blocks;
+package com.bgrummitt.tetris.controller.Game.Blocks;
 
 import android.graphics.Canvas;
-import android.util.Log;
 
 public abstract class Shape {
 
@@ -31,8 +30,12 @@ public abstract class Shape {
         movementSpeed = 0;
     }
 
-    public abstract boolean isTouching();
+    public abstract boolean isTouching(Shape shape);
+
+    public abstract boolean hitsFloor();
 
     public abstract void draw(Canvas canvas);
+
+    public abstract boolean blockCheck(Block block);
 
 }

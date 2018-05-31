@@ -2,9 +2,12 @@ package com.bgrummitt.tetris.view.GameActivity;
 
 import android.graphics.Canvas;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.SurfaceHolder;
 
-public class GameThread extends Thread {
+import com.bgrummitt.tetris.controller.Other.SwipeGestureDetection;
+
+public class GameThread extends Thread{
 
     private final String TAG = GameThread.class.getSimpleName();
 

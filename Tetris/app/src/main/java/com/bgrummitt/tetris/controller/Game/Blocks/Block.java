@@ -1,9 +1,7 @@
-package com.bgrummitt.tetris.controller.Blocks;
+package com.bgrummitt.tetris.controller.Game.Blocks;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 
 public class Block {
 
@@ -22,6 +20,13 @@ public class Block {
         paint.setColor(color);
     }
 
+    public boolean isTouching(Block block){
+        if((block.getY() + mSpaceSize) == mY && block.getX() == mX){
+            return true;
+        }
+        return false;
+    }
+
     public void update(int xMovement, int yMovement){
         mX += xMovement;
         mY += yMovement;
@@ -29,6 +34,10 @@ public class Block {
 
     public void draw(Canvas canvas){
         canvas.drawRect(mX, mY, (mX + mSpaceSize), (mY + mSpaceSize), paint);
+    }
+
+    public int getX() {
+        return mX;
     }
 
     public int getY() {

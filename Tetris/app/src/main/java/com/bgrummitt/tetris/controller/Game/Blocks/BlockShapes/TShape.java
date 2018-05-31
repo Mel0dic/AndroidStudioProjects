@@ -1,11 +1,10 @@
-package com.bgrummitt.tetris.controller.Blocks.BlockShapes;
+package com.bgrummitt.tetris.controller.Game.Blocks.BlockShapes;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.util.Log;
 
-import com.bgrummitt.tetris.controller.Blocks.Block;
-import com.bgrummitt.tetris.controller.Blocks.Shape;
+import com.bgrummitt.tetris.controller.Game.Blocks.Block;
+import com.bgrummitt.tetris.controller.Game.Blocks.Shape;
 
 public class TShape extends Shape {
 
@@ -28,9 +27,30 @@ public class TShape extends Shape {
     }
 
     @Override
-    public boolean isTouching() {
+    public boolean isTouching(Shape shape) {
+        for(Block block : blocks){
+            if(shape.blockCheck(block)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean hitsFloor() {
         if(blocks[mBottomBlock].getY() + mSpaceSize >= screenHeight){
             return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean blockCheck(Block block) {
+        for(Block myBlock : blocks){
+            if(myBlock.isTouching(block)){
+                return true;
+            }
         }
         return false;
     }

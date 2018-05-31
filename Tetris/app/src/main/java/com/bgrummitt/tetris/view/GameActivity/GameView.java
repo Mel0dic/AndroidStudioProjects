@@ -3,14 +3,17 @@ package com.bgrummitt.tetris.view.GameActivity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
-import com.bgrummitt.tetris.controller.Tetris;
+import com.bgrummitt.tetris.controller.Game.Tetris;
+import com.bgrummitt.tetris.controller.Other.SwipeGestureDetection;
 
-public class GameView extends SurfaceView implements SurfaceHolder.Callback {
+public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     private static final String TAG = GameView.class.getSimpleName();
 

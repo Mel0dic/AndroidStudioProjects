@@ -3,8 +3,11 @@ package com.bgrummitt.tetris.view.GameActivity;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.Window;
 import android.view.WindowManager;
+
+import com.bgrummitt.tetris.controller.Other.SwipeGestureDetection;
 
 public class GameActivity extends Activity {
 
