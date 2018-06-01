@@ -38,4 +38,9 @@ public abstract class Shape {
 
     public abstract boolean blockCheck(Block block);
 
+    public abstract void swipe(int movement);
+
+    public abstract boolean canSwipe();
+
+    public abstract void rotate();
 }

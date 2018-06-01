@@ -57,14 +57,6 @@ public class Tetris{
         }
     }
 
-    public void screenClicked(MotionEvent event){
-        if(screenNumClicks++ == 0){
-            startGame();
-        }else{
-
-        }
-    }
-
     public void update(){
         if(mShapeDropping != null) {
             if(System.currentTimeMillis() - time > 200) {
@@ -105,4 +97,21 @@ public class Tetris{
         }
     }
 
+    public void swipe(SwipeGestureDetection.swipeType type) {
+        if(type == SwipeGestureDetection.swipeType.right){
+            if(mShapeDropping.canSwipe()){
+                mShapeDropping.swipe(spaceSize);
+            }
+        }else if(type == SwipeGestureDetection.swipeType.left){
+            if(mShapeDropping.canSwipe()){
+                mShapeDropping.swipe(-spaceSize);
+            }
+        }
+    }
+
+    public void rotateFallingBlock() {
+        if(mShapeDropping != null) {
+            mShapeDropping.rotate();
+        }
+    }
 }
