@@ -125,7 +125,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         //If the canvas is not empty draw the game
         if (canvas != null) {
-            canvas.drawColor(Color.WHITE);
+            canvas.drawColor(Color.BLACK);
             game.draw(canvas);
         }
     }

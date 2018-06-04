@@ -40,7 +40,9 @@ public abstract class Shape {
 
     public abstract void swipe(int movement);
 
-    public abstract boolean canSwipe();
+    public abstract boolean canSwipe(int[][] tetrisGrid, int direction);
 
     public abstract void rotate();
+
+    public abstract int[][] addPosition(int[][] tetrisGrid);
 }

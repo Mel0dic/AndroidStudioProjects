@@ -3,6 +3,7 @@ package com.bgrummitt.tetris.controller.Game;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -11,6 +12,7 @@ import com.bgrummitt.tetris.controller.Game.Blocks.Shape;
 import com.bgrummitt.tetris.controller.Other.SwipeGestureDetection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -22,18 +24,42 @@ public class Tetris{
 
     private final int fallSpeed;
     private List<Shape> shapes = new ArrayList<>();
+    private int[][] mTetrisGrid = new int[20][10];
     private Random random;
     private Shape mShapeToDrop;
     private Shape mShapeDropping;
-    private int screenNumClicks = 0;
     private int spaceSize;
     private long time;
+    private Paint mEmptyStrokePaint;
+    private int mBottomOfTetrisGrid;
+    private int mLeftOfTetrisGrid;
+    private int mRightOfTetrisGrid;
+    private int mTopOfTetrisGrid;
 
     public Tetris(Resources resources){
         random = new Random();
-        spaceSize = screenWidth / 20;
+        spaceSize = screenWidth / 10;
+        if(spaceSize * 23 > screenHeight){
+            spaceSize = screenHeight / 23;
+        }
         fallSpeed = spaceSize;
         mShapeToDrop = getNewBlock();
+
+        mBottomOfTetrisGrid = (screenHeight - 3);
+        mLeftOfTetrisGrid = (screenWidth / 2) - (spaceSize * 5);
+        mRightOfTetrisGrid = (screenWidth / 2) + (spaceSize * 5);
+        mTopOfTetrisGrid = mBottomOfTetrisGrid - (spaceSize * 20);
+
+        for(int[] row : mTetrisGrid){
+            for(int column : row){
+                column = 0;
+            }
+        }
+
+        mEmptyStrokePaint = new Paint();
+        mEmptyStrokePaint.setStyle(Paint.Style.STROKE);
+        mEmptyStrokePaint.setColor(Color.RED);
+        mEmptyStrokePaint.setStrokeWidth(5);
     }
 
     public void startGame(){
@@ -47,11 +73,11 @@ public class Tetris{
 
         switch (randNum){
             case 0:
-                return new TShape((screenWidth / 2) - (spaceSize / 2), screenHeight / 20, fallSpeed, spaceSize, Color.RED);
+                return new TShape((screenWidth / 2) - spaceSize, (screenHeight-5) - (23 * spaceSize), fallSpeed, spaceSize, Color.RED, mTopOfTetrisGrid, mLeftOfTetrisGrid);
             case 1:
-                return new TShape((screenWidth / 2) - (spaceSize / 2), screenHeight / 20, fallSpeed, spaceSize, Color.YELLOW);
+                return new TShape((screenWidth / 2) - spaceSize, (screenHeight-5) - (23 * spaceSize), fallSpeed, spaceSize, Color.YELLOW, mTopOfTetrisGrid, mLeftOfTetrisGrid);
             case 2:
-                return new TShape((screenWidth / 2) - (spaceSize / 2), screenHeight / 20, fallSpeed, spaceSize, Color.BLUE);
+                return new TShape((screenWidth / 2) - spaceSize, (screenHeight-5) - (23 * spaceSize), fallSpeed, spaceSize, Color.BLUE, mTopOfTetrisGrid, mLeftOfTetrisGrid);
             default:
                 return null;
         }
@@ -64,6 +90,7 @@ public class Tetris{
                 time = System.currentTimeMillis();
             }
             if(mShapeDropping.hitsFloor()){
+                Log.d(TAG, "Hits Floor");
                 resetBlock();
             }else {
                 for (Shape shape : shapes) {
@@ -77,13 +104,20 @@ public class Tetris{
 
     public void resetBlock(){
         mShapeDropping.stop();
+        mTetrisGrid = mShapeDropping.addPosition(mTetrisGrid);
         shapes.add(mShapeDropping);
         mShapeDropping = mShapeToDrop;
         mShapeDropping.startFall();
         mShapeToDrop = getNewBlock();
+
+        Log.v(TAG, Integer.toString(mTetrisGrid.length));
+        for(int[] i : mTetrisGrid){
+            Log.v(TAG, Arrays.toString(i));
+        }
     }
 
     public void draw(Canvas canvas){
+        canvas.drawRect(mLeftOfTetrisGrid - 3, mTopOfTetrisGrid - 3, mRightOfTetrisGrid + 2, mBottomOfTetrisGrid - 2, mEmptyStrokePaint);
         //Draw the shape waiting to be dropped
         mShapeToDrop.draw(canvas);
         //If a block has been dropped already
@@ -98,14 +132,10 @@ public class Tetris{
     }
 
     public void swipe(SwipeGestureDetection.swipeType type) {
-        if(type == SwipeGestureDetection.swipeType.right){
-            if(mShapeDropping.canSwipe()){
-                mShapeDropping.swipe(spaceSize);
-            }
-        }else if(type == SwipeGestureDetection.swipeType.left){
-            if(mShapeDropping.canSwipe()){
-                mShapeDropping.swipe(-spaceSize);
-            }
+        if(type == SwipeGestureDetection.swipeType.right && mShapeDropping != null && mShapeDropping.canSwipe(mTetrisGrid, 1)){
+            mShapeDropping.swipe(1);
+        }else if(type == SwipeGestureDetection.swipeType.left && mShapeDropping != null && mShapeDropping.canSwipe(mTetrisGrid, -1)){
+            mShapeDropping.swipe(-1);
         }
     }
 
@@ -114,4 +144,5 @@ public class Tetris{
             mShapeDropping.rotate();
         }
     }
+
 }
