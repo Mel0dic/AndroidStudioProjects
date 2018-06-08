@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bgrummitt.stormy.R;
+import com.bgrummitt.stormy.ui.HourlyForecastActivity;
 import com.bgrummitt.stormy.weather.Hour;
 
 public class HourAdapter extends RecyclerView.Adapter<HourAdapter.HourViewHolder> {
@@ -21,6 +22,9 @@ public class HourAdapter extends RecyclerView.Adapter<HourAdapter.HourViewHolder
     public HourAdapter(Context context, Hour[] hours){
         mContext = context;
         mHours = hours;
+
+        HourlyForecastActivity hourly = (HourlyForecastActivity) mContext;
+        hourly.getNum();
     }
 
     public class HourViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

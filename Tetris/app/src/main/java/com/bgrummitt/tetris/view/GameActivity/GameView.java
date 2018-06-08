@@ -20,7 +20,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG = GameView.class.getSimpleName();
 
     // Global
-    private GestureDetectorCompat gestureDetectorCompat = null;
+    private GestureDetectorCompat gestureDetectorCompat;
     private GameThread mainThread;
     private Tetris game;
 
