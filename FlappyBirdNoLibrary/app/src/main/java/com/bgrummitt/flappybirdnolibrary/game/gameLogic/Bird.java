@@ -21,6 +21,9 @@ public class Bird {
     private int birdDir;
     private boolean isInJump = false;
     private boolean birdPic = true;
+    private boolean birdIsFacingDown;
+    private int birdJumpDistance;
+    private float percentageMoved;
 
     /**
      * Bird constructor
@@ -37,19 +40,34 @@ public class Bird {
         jumpSpeed = (screenHeight / -96);
         gravity = (screenHeight / 192);
         birdDir = 0;
+        birdJumpDistance = screenHeight / 10;
+        birdIsFacingDown = true;
     }
 
     private long startTime;
 
     public void update(){
-        //If the bird has been flapping for more than 200 milliseconds
-        if(isInJump && (System.currentTimeMillis() - startTime) >= 200){
-            birdDir = gravity;
-            isInJump = false;
-            birdImage = RotateBitmap(birdImage, 90);
-            birdImageFlap = RotateBitmap(birdImageFlap, 90);
+        //If the bird has been flapping for more than 300 milliseconds = 0.3 seconds
+        if(isInJump){
+            //Get the percentage of time that has passed in a form of 0.0
+            float percentagePassed = (System.currentTimeMillis() - startTime) / 250.0f;
+            //Get the percentage of time that has passed since the last measurement and move the bird that percentage of the jump distance
+            y -= (((percentagePassed - percentageMoved) * birdJumpDistance));
+            //Set the percentage that the bird has moved on its upward journey
+            percentageMoved = percentagePassed;
+            //If it has moved 100% of its journey stop the jump
+            if(percentageMoved >= 1){
+                isInJump = false;
+                startTime = System.currentTimeMillis();
+            }
+        }else {
+            if(!birdIsFacingDown && System.currentTimeMillis() - startTime > 500){
+                birdIsFacingDown = true;
+                birdImage = RotateBitmap(birdImage, 90);
+                birdImageFlap = RotateBitmap(birdImageFlap, 90);
+            }
+            y += birdDir;
         }
-        y += birdDir;
         //Flip the birdPic boolean
         if(frame > 10) {
             birdPic = !birdPic;
@@ -62,11 +80,14 @@ public class Bird {
     public void flap(){
         //If the bird is not in mid flap
         if(!isInJump) {
-            birdDir = jumpSpeed;
             startTime = System.currentTimeMillis();
+            percentageMoved = 0;
             isInJump = true;
-            birdImage = RotateBitmap(birdImage, 270);
-            birdImageFlap = RotateBitmap(birdImageFlap, 270);
+            if(birdIsFacingDown) {
+                birdIsFacingDown = false;
+                birdImage = RotateBitmap(birdImage, 270);
+                birdImageFlap = RotateBitmap(birdImageFlap, 270);
+            }
         }
     }
 

@@ -86,6 +86,8 @@ public class Hour implements Parcelable{
         dest.writeString(mTimezone);
     }
 
+    //MUST HAVE A PUBLIC CONSTRUCTOR WITH NO ARGUMENTS FOR THIS TO WORK
+
     private Hour(Parcel in){
         mTime = in.readLong();
         mSummary = in.readString();
