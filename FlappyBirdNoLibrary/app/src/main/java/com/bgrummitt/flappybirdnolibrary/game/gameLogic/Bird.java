@@ -61,7 +61,7 @@ public class Bird {
                 startTime = System.currentTimeMillis();
             }
         }else {
-            if(!birdIsFacingDown && System.currentTimeMillis() - startTime > 500){
+            if(!birdIsFacingDown && System.currentTimeMillis() - startTime > 100){
                 birdIsFacingDown = true;
                 birdImage = RotateBitmap(birdImage, 90);
                 birdImageFlap = RotateBitmap(birdImageFlap, 90);
