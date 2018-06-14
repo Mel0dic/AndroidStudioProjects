@@ -18,12 +18,14 @@ public class Bird {
     private Bitmap birdImageFlap;
     private int x;
     private int y;
-    private int birdDir;
     private boolean isInJump = false;
     private boolean birdPic = true;
     private boolean birdIsFacingDown;
     private int birdJumpDistance;
+    private int birdFallDistance;
     private float percentageMoved;
+    private long fallStartTime;
+    private float percentagePassed;
 
     /**
      * Bird constructor
@@ -39,34 +41,45 @@ public class Bird {
         //Set the speed of the fall and the speed of the flap
         jumpSpeed = (screenHeight / -96);
         gravity = (screenHeight / 192);
-        birdDir = 0;
+        //Get 10% of the screen height
         birdJumpDistance = screenHeight / 10;
+        //Get 5% of the screen height
+        birdFallDistance = (screenHeight / 20);
         birdIsFacingDown = true;
     }
 
     private long startTime;
 
     public void update(){
+//        Log.d(TAG, String.format("X = %d, Y = %d", x, y));
         //If the bird has been flapping for more than 300 milliseconds = 0.3 seconds
         if(isInJump){
             //Get the percentage of time that has passed in a form of 0.0
-            float percentagePassed = (System.currentTimeMillis() - startTime) / 250.0f;
+            percentagePassed = (System.currentTimeMillis() - startTime) / 250.0f;
             //Get the percentage of time that has passed since the last measurement and move the bird that percentage of the jump distance
-            y -= (((percentagePassed - percentageMoved) * birdJumpDistance));
+            y -= ((percentagePassed - percentageMoved) * birdJumpDistance);
             //Set the percentage that the bird has moved on its upward journey
             percentageMoved = percentagePassed;
             //If it has moved 100% of its journey stop the jump
             if(percentageMoved >= 1){
                 isInJump = false;
                 startTime = System.currentTimeMillis();
+                fallStartTime = System.currentTimeMillis();
+                percentageMoved = 0;
             }
-        }else {
+        }else if(fallStartTime != 0){
             if(!birdIsFacingDown && System.currentTimeMillis() - startTime > 100){
                 birdIsFacingDown = true;
                 birdImage = RotateBitmap(birdImage, 90);
                 birdImageFlap = RotateBitmap(birdImageFlap, 90);
             }
-            y += birdDir;
+            percentagePassed = (System.currentTimeMillis() - fallStartTime) / 250.0f;
+            y += ((percentagePassed - percentageMoved) * birdFallDistance);
+            percentageMoved = percentagePassed;
+            if(percentageMoved >= 1){
+                fallStartTime = System.currentTimeMillis();
+                percentageMoved = 0;
+            }
         }
         //Flip the birdPic boolean
         if(frame > 10) {
@@ -92,7 +105,7 @@ public class Bird {
     }
 
     public void startFlapping(){
-        birdDir = gravity;
+        fallStartTime = System.currentTimeMillis();
         birdImage = RotateBitmap(birdImage, 45);
         birdImageFlap = RotateBitmap(birdImageFlap, 45);
     }
