@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.bgrummitt.compscisimpleapp.R;
 import com.bgrummitt.compscisimpleapp.UI.AlertDialogFragment;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,6 +41,7 @@ public class Answers {
         getForecast(latitude, longitude);
     }
 
+    //Take the questions number and answer template and return the full answer
     public String QuestionAsked(int qNumber, String questionTemplate){
         String answer = "";
 
@@ -58,7 +60,7 @@ public class Answers {
                 answer = String.format(questionTemplate, mForecast[1]);
                 break;
             case 5:
-                answer = String.format("The final question will be?");
+                answer = String.format(questionTemplate, mForecast[2]);
                 break;
         }
 
@@ -128,7 +130,7 @@ public class Answers {
             alertUserAboutError();
             Toast.makeText(mContext, R.string.network_unavailable, Toast.LENGTH_LONG).show();
             //Set the forecast that is accessed to Error messages
-            String[] errorText = {"Sorry I could not connect to the internet so I am unable to answer that", "Sorry I could not connect to the internet so I am unable to answer that"};
+            String[] errorText = {"Sorry I could not connect to the internet so I am unable to answer that", "Sorry I could not connect to the internet so I am unable to answer that", "Sorry I was unable to get tomorrows forecast."};
             setForecast(errorText);
         }
     }
@@ -138,11 +140,12 @@ public class Answers {
     }
 
     private String[] parseForecastDetails(String jsonData) throws JSONException{
-        String[] forecast = new String[2];
+        String[] forecast = new String[3];
 
         //Set the first element to the summary and second element to the temperature
         forecast[0] = getCurrentSummary(jsonData);
         forecast[1] = getCurrentTemperature(jsonData);
+        forecast[2] = getTomorrowsSummary(jsonData);
 
         return forecast;
     }
@@ -185,6 +188,22 @@ public class Answers {
 
         //Return the temperature info from the currently object
         return currently.getString("temperature");
+    }
+
+    public String getTomorrowsSummary(String jsonData) throws JSONException{
+        //Set the forecast to a JSONObject with the passed json String
+        JSONObject forecast = new JSONObject(jsonData);
+
+        //Get the daily weather Object name "daily"
+        JSONObject daily = forecast.getJSONObject("daily");
+        //As it has many days turn this into an array
+        JSONArray data = daily.getJSONArray("data");
+
+        //Get the first object in the array
+        JSONObject tomorrow = data.getJSONObject(0);
+
+        //Return the summary info from the tomorrow object
+        return tomorrow.getString("summary");
     }
 
 }
