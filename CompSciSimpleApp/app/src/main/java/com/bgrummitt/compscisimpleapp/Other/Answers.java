@@ -18,7 +18,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -37,22 +36,29 @@ public class Answers {
 
     public Answers(Context context){
         mContext = context;
+        Log.d(TAG, context.getPackageName());
         getForecast(latitude, longitude);
     }
 
-    public String QuestionAsked(int qNumber){
+    public String QuestionAsked(int qNumber, String questionTemplate){
         String answer = "";
 
+        //Switch statement for questions
         switch(qNumber){
             case 1:
+                answer = String.format(questionTemplate, getTime());
                 break;
             case 2:
+                answer = String.format(questionTemplate, getDate());
                 break;
             case 3:
+                answer = String.format(questionTemplate, mForecast[0]);
                 break;
             case 4:
+                answer = String.format(questionTemplate, mForecast[1]);
                 break;
             case 5:
+                answer = String.format("The final question will be?");
                 break;
         }
 
@@ -60,12 +66,14 @@ public class Answers {
     }
 
     public String getTime(){
-        SimpleDateFormat formatter = new SimpleDateFormat("K:m:s");
+        //Get time in format 12:23:01 Hours Minutes Seconds
+        SimpleDateFormat formatter = new SimpleDateFormat("KK:mm:ss");
         Date dateTime = Calendar.getInstance().getTime();
         return formatter.format(dateTime);
     }
 
     public String getDate(){
+         //Get date in format 05/05/14 Day Month Year
          SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
          Date dateTime = Calendar.getInstance().getTime();
          return formatter.format(dateTime);
@@ -76,16 +84,20 @@ public class Answers {
         String forecastURL = "https://api.darksky.net/forecast/%s/%f,%f?lang=%s&units=%s";
         String units = "si";
         String language = "en";
+        //Format all the information into the Forecast
         forecastURL = String.format(Locale.UK, forecastURL, apiKey, latitude, longitude, language, units);
 
+        //If you can connect to the internet
         if(isNetworkAvailable()) {
-
+            //Use OkHttp to connect to the dark sky api
             OkHttpClient client = new OkHttpClient();
 
+            //Build new request
             Request request = new Request.Builder()
                     .url(forecastURL)
                     .build();
 
+            //Make a new Request
             Call call = client.newCall(request);
             call.enqueue(new Callback() {
                 @Override
@@ -94,8 +106,10 @@ public class Answers {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
+                        //Get the jsonData in string form
                         String jsonData = response.body().string();
                         Log.v(TAG, jsonData);
+                        //If we got a response set the pass the data and set the forecast else create an alert
                         if (response.isSuccessful()) {
                             setForecast(parseForecastDetails(jsonData));
                         } else {
@@ -110,21 +124,23 @@ public class Answers {
             });
 
         }else{
+            //If there is an error alert the user.
             alertUserAboutError();
             Toast.makeText(mContext, R.string.network_unavailable, Toast.LENGTH_LONG).show();
+            //Set the forecast that is accessed to Error messages
+            String[] errorText = {"Sorry I could not connect to the internet so I am unable to answer that", "Sorry I could not connect to the internet so I am unable to answer that"};
+            setForecast(errorText);
         }
     }
 
     public void setForecast(String[] forecast){
-        String[] forecastTemp = new String[2];
-        forecastTemp[0] = forecast[0];
-        forecastTemp[1] = forecast[1];
-        mForecast = forecastTemp;
+        mForecast = forecast;
     }
 
     private String[] parseForecastDetails(String jsonData) throws JSONException{
         String[] forecast = new String[2];
 
+        //Set the first element to the summary and second element to the temperature
         forecast[0] = getCurrentSummary(jsonData);
         forecast[1] = getCurrentTemperature(jsonData);
 
@@ -132,12 +148,14 @@ public class Answers {
     }
 
     private boolean isNetworkAvailable() {
+        //Get the ConnectivityManager and get the active network info. And return true of false depending on isConnected and if network info is null
         ConnectivityManager manager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
         return (networkInfo != null) && (networkInfo.isConnected());
     }
 
     private void alertUserAboutError() {
+        //Create a new Dialog Fragment and display it
         AlertDialogFragment dialog = new AlertDialogFragment();
         try{
             final Activity activity = (Activity) mContext;
@@ -148,18 +166,24 @@ public class Answers {
     }
 
     public String getCurrentSummary(String jsonData) throws JSONException{
+        //Set the forecast to a JSONObject with the passed json String
         JSONObject forecast = new JSONObject(jsonData);
 
+        //Get the Current weather Object name "currently"
         JSONObject currently = forecast.getJSONObject("currently");
 
+        //Return the summary info from the currently object
         return currently.getString("summary");
     }
 
     public String getCurrentTemperature(String jsonData) throws JSONException{
+        //Set the forecast to a JSONObject with the passed json String
         JSONObject forecast = new JSONObject(jsonData);
 
+        //Get the Current weather Object name "currently"
         JSONObject currently = forecast.getJSONObject("currently");
 
+        //Return the temperature info from the currently object
         return currently.getString("temperature");
     }
 
