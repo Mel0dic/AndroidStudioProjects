@@ -1,15 +1,15 @@
 package com.bgrummitt.compscisimpleapp.Other;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+        import java.util.ArrayList;
+        import java.util.List;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
+        import android.content.Context;
+        import android.database.Cursor;
+        import android.database.DatabaseUtils;
+        import android.database.SQLException;
+        import android.database.sqlite.SQLiteDatabase;
+        import android.util.Log;
 
 public class TestAdapter {
 
@@ -22,6 +22,7 @@ public class TestAdapter {
     //Template sql query
     private final String mQueryNumberSql ="SELECT _id FROM QUESTIONS_TABLE WHERE QUESTION LIKE '%s'";
     private final String mQueryAnswerSql ="SELECT ANSWER FROM QUESTIONS_TABLE WHERE QUESTION LIKE '%s'";
+
 
     public TestAdapter(Context context) {
         this.mContext = context;
