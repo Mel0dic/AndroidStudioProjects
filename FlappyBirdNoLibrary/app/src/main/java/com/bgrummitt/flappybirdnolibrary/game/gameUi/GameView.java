@@ -39,16 +39,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      */
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        //Create new thread class with the SurfaceHolder and context
-        thread = new GameThread(getHolder(), this);
-        //Keep the inputs on this thread and not on the new one
-        setFocusable(true);
-
-        game = new FlappyBird(getResources());
-
-        //Start the games update infinite loop
-        thread.setRunning(true);
-        thread.start();
+        //To stop the thread it may take a few attempts so we create a while loop
+        boolean retry = true;
+        while(retry){
+            try {
+                thread.setRunning(false);
+                thread.join();
+            } catch(InterruptedException e){
+                e.printStackTrace();
+            }
+            retry = false;
+        }
     }
 
     @Override
