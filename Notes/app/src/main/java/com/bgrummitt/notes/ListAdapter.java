@@ -1,16 +1,19 @@
 package com.bgrummitt.notes;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
-public class ListAdapter extends BaseAdapter {
+public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
 
     private final Context mContext;
     private final List<Note> mNotes;
@@ -20,57 +23,62 @@ public class ListAdapter extends BaseAdapter {
         mNotes = notes;
     }
 
-    @Override
-    public int getCount() {
-        return mNotes.size();
-    }
+    public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-    @Override
-    public Object getItem(int position) {
-        return mNotes.get(position);
-    }
+        public ImageButton deleteButton;
+        public TextView subjectTextView;
+        public TextView noteTextView;
 
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
+        public ListViewHolder(View itemView) {
+            super(itemView);
 
-    @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        final ViewHolder holder;
+            deleteButton = itemView.findViewById(R.id.deleteImageButton);
+            subjectTextView = itemView.findViewById(R.id.subjectTextView);
+            noteTextView = itemView.findViewById(R.id.mainNoteDisplay);
 
-        if(convertView == null){
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.note_layout, null);
-            holder = new ViewHolder();
-            holder.deleteButton = convertView.findViewById(R.id.deleteImageButton);
-            holder.subjectTextView = convertView.findViewById(R.id.subjectTextView);
-            holder.noteTextView = convertView.findViewById(R.id.mainNoteDisplay);
-
-            convertView.setTag(holder);
-        }else{
-            holder = (ViewHolder) convertView.getTag();
+            itemView.setOnClickListener(this);
         }
 
-        holder.subjectTextView.setText(mNotes.get(position).getSubject());
-        holder.noteTextView.setText(mNotes.get(position).getNoteBody());
+        public void bindList(Note note, final int position){
+            subjectTextView.setText(note.getSubject());
+            noteTextView.setText(note.getNoteBody());
 
-        holder.noteTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mNotes.remove(position);
-            }
-        });
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mNotes.remove(position);
+                    Toast.makeText(mContext, "Delete " + subjectTextView.getText(), Toast.LENGTH_SHORT).show();
+                    notifyDataSetChanged();
+                }
+            });
+        }
 
-        return convertView;
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(mContext, subjectTextView.getText(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @NonNull
+    @Override
+    public ListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_layout, parent, false);
+        ListViewHolder viewHolder = new ListViewHolder(view);
+        return viewHolder;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
+        holder.bindList(mNotes.get(position), position);
+    }
+
+    @Override
+    public int getItemCount() {
+        return mNotes.size();
     }
 
     public List<Note> getNotes(){
         return mNotes;
     }
 
-    private static class ViewHolder{
-        public ImageButton deleteButton;
-        public TextView subjectTextView;
-        public TextView noteTextView;
-    }
 }
