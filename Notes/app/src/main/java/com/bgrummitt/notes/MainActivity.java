@@ -1,22 +1,18 @@
 package com.bgrummitt.notes;
 
-import android.app.ListActivity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Note> notes = new ArrayList<>();
     private ListAdapter mListAdapter;
     private LinearLayoutManager mLayoutManager;
-    private RecyclerView listView;
+    private RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +32,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        listView =  findViewById(R.id.list);
+        mRecyclerView =  findViewById(R.id.list);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        // Set FAB and then set on click listener to create new note
+        final FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -46,11 +43,32 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Create the list adapter and set the recycler views adapter to the created list adapter
         mListAdapter = new ListAdapter(this, notes);
-        listView.setAdapter(mListAdapter);
+        mRecyclerView.setAdapter(mListAdapter);
         mLayoutManager = new LinearLayoutManager(this);
-        listView.setLayoutManager(mLayoutManager);
-        listView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        // When at end of list give half oval show still pulling
+        mRecyclerView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(mListAdapter));
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+
+        // Make it so fab disappears when scrolling down then reappears when scrolling back up
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
+                // If the rate of change of y > 0 hide else show
+                if(dy > 0){
+                    fab.hide();
+                } else{
+                    fab.show();
+                }
+
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
     }
 
     @Override
@@ -76,16 +94,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void newNote(){
+        // Build the pop up for the new note
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+        // Create a new view with the note layout
         View mView = getLayoutInflater().inflate(R.layout.dialog_new_note, null);
 
+        // Get the edit elements from the view
         final EditText mSubject = mView.findViewById(R.id.subjectEditText);
         final EditText mNotes = mView.findViewById(R.id.mainNotesEditText);
         Button mSaveButton = mView.findViewById(R.id.saveButton);
 
+        // Build the dialog with the view
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
 
+        // Add the on click listener so when the sections have been filled the note is added and
+        // the dialog gets dismissed
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,19 +124,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void makeNewNote(String subject, String note){
-        refreshListAdapter();
-
-        notes.add(new Note(subject, note));
-
-        mListAdapter = new ListAdapter(this, notes);
-        listView.setAdapter(mListAdapter);
-    }
-
-    public void refreshListAdapter(){
-        notes = mListAdapter.getNotes();
-        mListAdapter = new ListAdapter(this, notes);
+        // Add the note in the adapter and refresh
+        mListAdapter.addNote(new Note(subject, note));
         mListAdapter.notifyDataSetChanged();
-        listView.setAdapter(mListAdapter);
     }
 
 }

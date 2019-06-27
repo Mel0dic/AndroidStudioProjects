@@ -17,6 +17,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
     private final Context mContext;
     private final List<Note> mNotes;
+    private Note mRecentlyDeltedItem;
+    private int mRecentlyDeletedPosition;
 
     public ListAdapter (Context context, List<Note> notes){
         mContext = context;
@@ -25,14 +27,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
     public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        public ImageButton deleteButton;
         public TextView subjectTextView;
         public TextView noteTextView;
 
         public ListViewHolder(View itemView) {
             super(itemView);
 
-            deleteButton = itemView.findViewById(R.id.deleteImageButton);
             subjectTextView = itemView.findViewById(R.id.subjectTextView);
             noteTextView = itemView.findViewById(R.id.mainNoteDisplay);
 
@@ -42,15 +42,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         public void bindList(Note note, final int position){
             subjectTextView.setText(note.getSubject());
             noteTextView.setText(note.getNoteBody());
-
-            deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mNotes.remove(position);
-                    Toast.makeText(mContext, "Delete " + subjectTextView.getText(), Toast.LENGTH_SHORT).show();
-                    notifyDataSetChanged();
-                }
-            });
         }
 
         @Override
@@ -72,6 +63,18 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         holder.bindList(mNotes.get(position), position);
     }
 
+    public void deleteItem(int position){
+        mRecentlyDeltedItem = mNotes.get(position);
+        mRecentlyDeletedPosition = position;
+        mNotes.remove(position);
+        notifyItemRemoved(position);
+        showUndoSnackbar();
+    }
+
+    public void showUndoSnackbar(){
+
+    }
+
     @Override
     public int getItemCount() {
         return mNotes.size();
@@ -79,6 +82,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
     public List<Note> getNotes(){
         return mNotes;
+    }
+
+    public void addNote(Note note){
+        mNotes.add(note);
+    }
+
+    public Context getContext(){
+        return mContext;
     }
 
 }
