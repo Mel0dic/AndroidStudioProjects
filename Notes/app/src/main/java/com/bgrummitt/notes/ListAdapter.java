@@ -1,5 +1,6 @@
 package com.bgrummitt.notes;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -73,16 +74,16 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     }
 
     private void showUndoSnackbar() {
-//        View view = mActivity.findViewById(R.id.coordinator_layout);
-//        Snackbar snackbar = Snackbar.make(view, R.string.snack_bar_undo,
-//                Snackbar.LENGTH_LONG);
-//        snackbar.setAction(R.string.snack_bar_undo, new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                ListAdapter.this.undoDelete();
-//            }
-//        });
-//        snackbar.show();
+        View view = ((Activity) mContext).findViewById(R.id.list);
+        Snackbar snackbar = Snackbar.make(view, R.string.snack_bar_undo,
+                Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.snack_bar_undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ListAdapter.this.undoDelete();
+            }
+        });
+        snackbar.show();
     }
 
     private void undoDelete() {
