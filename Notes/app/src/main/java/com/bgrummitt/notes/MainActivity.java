@@ -1,7 +1,12 @@
 package com.bgrummitt.notes;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,11 +18,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -51,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         // When at end of list give half oval show still pulling
         mRecyclerView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(mListAdapter));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteOrCompleteCallback(mListAdapter));
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
         // Make it so fab disappears when scrolling down then reappears when scrolling back up
@@ -69,6 +75,17 @@ public class MainActivity extends AppCompatActivity {
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
+
+        // Add "HamBurger" icon inn toolbar with open close action and animation
+        // Retrieve draw and navigationView
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        // Create an action bar toggle with the drawer view and toolbar with string id's for accessibility description
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -88,6 +105,10 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.action_select_all) {
+            Toast.makeText(this, "Select All", Toast.LENGTH_SHORT).show();
+            mListAdapter.selectAll();
+            mListAdapter.notifyDataSetChanged();
         }
 
         return super.onOptionsItemSelected(item);
@@ -125,8 +146,23 @@ public class MainActivity extends AppCompatActivity {
 
     public void makeNewNote(String subject, String note){
         // Add the note in the adapter and refresh
-        mListAdapter.addNote(new Note(subject, note));
+        mListAdapter.addNote(new Note(subject, note, false));
         mListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.Completed_List){
+
+        }else if(id == R.id.TODO_List){
+
+        }
+
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
     }
 
 }

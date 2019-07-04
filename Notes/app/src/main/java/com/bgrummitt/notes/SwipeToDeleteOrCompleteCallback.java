@@ -9,19 +9,21 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
-public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
+public class SwipeToDeleteOrCompleteCallback extends ItemTouchHelper.SimpleCallback {
 
     private ListAdapter mListAdapter;
-    private Drawable icon;
+    private Drawable iconDelete;
+    private Drawable iconComplete;
     private final ColorDrawable background;
 
-    public SwipeToDeleteCallback(ListAdapter adapter){
+    public SwipeToDeleteOrCompleteCallback(ListAdapter adapter){
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
 
         mListAdapter = adapter;
 
         background = new ColorDrawable(Color.RED);
-        icon = ContextCompat.getDrawable(mListAdapter.getContext(), R.drawable.baseline_delete_white_36);
+        iconDelete = ContextCompat.getDrawable(mListAdapter.getContext(), R.drawable.baseline_delete_white_36);
+        iconComplete = ContextCompat.getDrawable(mListAdapter.getContext(), R.drawable.baseline_done_outline_white_36);
     }
 
     @Override
@@ -42,29 +44,33 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
         View itemView = viewHolder.itemView;
         int backgroundCornerOffset = 20;
 
-        int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
-        int iconTop = itemView.getTop() + (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
-        int iconBottom = iconTop + icon.getIntrinsicHeight();
+        int iconMargin = (itemView.getHeight() - iconDelete.getIntrinsicHeight()) / 2;
+        int iconTop = itemView.getTop() + (itemView.getHeight() - iconDelete.getIntrinsicHeight()) / 2;
+        int iconBottom = iconTop + iconDelete.getIntrinsicHeight();
 
         if(dX > 0){
-            int iconLeft = itemView.getLeft() + iconMargin + icon.getIntrinsicWidth();
+            int iconLeft = itemView.getLeft() + iconMargin + iconComplete.getIntrinsicWidth();
             int iconRight = itemView.getLeft() + iconMargin;
-            icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+            iconComplete.setBounds(iconRight, iconTop, iconLeft, iconBottom);
 
+            background.setColor(Color.BLUE);
             background.setBounds(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + ((int) dX) + backgroundCornerOffset, itemView.getBottom());
         }else if(dX < 0){
-            int iconLeft = itemView.getRight() - iconMargin - icon.getIntrinsicWidth();
+            int iconLeft = itemView.getRight() - iconMargin - iconDelete.getIntrinsicWidth();
             int iconRight = itemView.getRight() - iconMargin;
-            icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+            iconDelete.setBounds(iconLeft, iconTop, iconRight, iconBottom);
 
+            background.setColor(Color.RED);
             background.setBounds(itemView.getRight() + ((int) dX) - backgroundCornerOffset, itemView.getTop(), itemView.getRight(), itemView.getBottom());
         }else{
             background.setBounds(0, 0, 0, 0);
-            icon.setBounds(0, 0, 0, 0);
+            iconComplete.setBounds(0, 0, 0, 0);
+            iconDelete.setBounds(0, 0, 0, 0);
         }
 
         background.draw(c);
-        icon.draw(c);
+        iconComplete.draw(c);
+        iconDelete.draw(c);
 
     }
 }

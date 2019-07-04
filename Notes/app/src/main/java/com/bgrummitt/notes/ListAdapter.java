@@ -8,8 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageButton;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,8 +18,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
     private final Context mContext;
     private final List<Note> mNotes;
-    private Note mRecentlyDeltedItem;
+    private Note mRecentlyDeletedItem;
     private int mRecentlyDeletedPosition;
+    private Boolean currentSelectAllState = false;
 
     public ListAdapter (Context context, List<Note> notes){
         mContext = context;
@@ -31,12 +31,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
         public TextView subjectTextView;
         public TextView noteTextView;
+        public CheckBox completeCheckBox;
 
         public ListViewHolder(View itemView) {
             super(itemView);
 
             subjectTextView = itemView.findViewById(R.id.subjectTextView);
             noteTextView = itemView.findViewById(R.id.mainNoteDisplay);
+            completeCheckBox = itemView.findViewById(R.id.CompletedCheck);
 
             itemView.setOnClickListener(this);
         }
@@ -44,6 +46,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         public void bindList(Note note, final int position){
             subjectTextView.setText(note.getSubject());
             noteTextView.setText(note.getNoteBody());
+            completeCheckBox.setChecked(note.getIsCompleted());
         }
 
         @Override
@@ -66,14 +69,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     }
 
     public void deleteItem(int position){
-        mRecentlyDeltedItem = mNotes.get(position);
+        mRecentlyDeletedItem = mNotes.get(position);
         mRecentlyDeletedPosition = position;
         mNotes.remove(position);
         notifyItemRemoved(position);
-        showUndoSnackbar();
+        showUndoSnackBar();
     }
 
-    private void showUndoSnackbar() {
+    private void showUndoSnackBar() {
         View view = ((Activity) mContext).findViewById(R.id.list);
         Snackbar snackbar = Snackbar.make(view, R.string.snack_bar_undo,
                 Snackbar.LENGTH_LONG);
@@ -88,8 +91,16 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
     private void undoDelete() {
         mNotes.add(mRecentlyDeletedPosition,
-                mRecentlyDeltedItem);
+                mRecentlyDeletedItem);
         notifyItemInserted(mRecentlyDeletedPosition);
+    }
+
+    public void selectAll(){
+        for(Note note : mNotes){
+            note.setIsCompleted(!currentSelectAllState);
+        }
+
+        currentSelectAllState = !currentSelectAllState;
     }
 
     @Override
