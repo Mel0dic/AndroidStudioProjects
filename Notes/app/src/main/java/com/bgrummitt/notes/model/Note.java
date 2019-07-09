@@ -1,15 +1,17 @@
-package com.bgrummitt.notes;
+package com.bgrummitt.notes.model;
 
 public class Note {
 
     private String subject;
     private String noteBody;
     private Boolean isCompleted;
+    private int DatabaseID;
 
-    public Note(String subject, String noteBody, Boolean isCompleted){
+    public Note(String subject, String noteBody, Boolean isCompleted, int id){
         this.subject = subject;
         this.noteBody = noteBody;
         this.isCompleted = isCompleted;
+        this.DatabaseID = id;
     }
 
     public String getSubject() {
@@ -31,5 +33,9 @@ public class Note {
     public Boolean getIsCompleted(){return isCompleted;}
 
     public void setIsCompleted(Boolean completed){ isCompleted = completed; }
+
+    public int getDatabaseID(){
+        return DatabaseID;
+    }
 
 }

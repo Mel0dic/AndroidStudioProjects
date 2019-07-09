@@ -1,5 +1,7 @@
-package com.bgrummitt.notes;
+package com.bgrummitt.notes.activities;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -20,6 +22,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.bgrummitt.notes.controller.adapters.ListAdapter;
+import com.bgrummitt.notes.controller.databse.DatabaseAdapter;
+import com.bgrummitt.notes.controller.databse.DatabaseHelper;
+import com.bgrummitt.notes.model.Note;
+import com.bgrummitt.notes.R;
+import com.bgrummitt.notes.controller.callback.SwipeToDeleteOrCompleteCallback;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ListAdapter mListAdapter;
     private LinearLayoutManager mLayoutManager;
     private RecyclerView mRecyclerView;
+    private DatabaseHelper mDatabaseHelper;
+    private int maxDbID = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +59,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 newNote();
             }
         });
+
+        mDatabaseHelper = new DatabaseHelper(this, "NOTES_DB");
+        Cursor cursor = mDatabaseHelper.getNotesToBeCompleted();
+
+        if(cursor.moveToFirst()){
+            int indexID = cursor.getColumnIndex("id_");
+            int indexSubject = cursor.getColumnIndex(mDatabaseHelper.SUBJECT_COLUMN_NAME);
+            int indexNote = cursor.getColumnIndex(mDatabaseHelper.NOTE_COLUMN_NAME);
+
+            int tempID;
+
+            while(!cursor.isAfterLast()){
+                tempID = cursor.getInt(indexID);
+                notes.add(new Note(cursor.getString(indexSubject), cursor.getString(indexNote), false, tempID));
+                if(tempID > maxDbID){
+                    maxDbID = tempID;
+                }
+                cursor.moveToNext();
+            }
+        }
 
         // Create the list adapter and set the recycler views adapter to the created list adapter
         mListAdapter = new ListAdapter(this, notes);
@@ -135,7 +166,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 if(!mSubject.getText().toString().isEmpty() && !mNotes.getText().toString().isEmpty()){
-                    makeNewNote(mSubject.getText().toString(), mNotes.getText().toString());
+                    String subject = mSubject.getText().toString();
+                    String note = mNotes.getText().toString();
+                    makeNewNote(subject, note);
                     dialog.dismiss();
                 }
             }
@@ -144,9 +177,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialog.show();
     }
 
+    public void markNoteCompleted(int id){
+        mDatabaseHelper.moveNoteToCompleted(id);
+    }
+
     public void makeNewNote(String subject, String note){
+        //Add note to db
+        mDatabaseHelper.addNoteToBeCompleted(subject, note);
         // Add the note in the adapter and refresh
-        mListAdapter.addNote(new Note(subject, note, false));
+        mListAdapter.addNote(new Note(subject, note, false, maxDbID + 1));
+        maxDbID += 1;
         mListAdapter.notifyDataSetChanged();
     }
 

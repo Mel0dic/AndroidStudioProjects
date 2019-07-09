@@ -1,4 +1,4 @@
-package com.bgrummitt.notes;
+package com.bgrummitt.notes.controller.callback;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -8,6 +8,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
+
+import com.bgrummitt.notes.R;
+import com.bgrummitt.notes.controller.adapters.ListAdapter;
 
 public class SwipeToDeleteOrCompleteCallback extends ItemTouchHelper.SimpleCallback {
 

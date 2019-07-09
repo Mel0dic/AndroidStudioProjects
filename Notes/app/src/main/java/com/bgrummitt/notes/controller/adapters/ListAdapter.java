@@ -1,4 +1,4 @@
-package com.bgrummitt.notes;
+package com.bgrummitt.notes.controller.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,6 +11,10 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bgrummitt.notes.activities.MainActivity;
+import com.bgrummitt.notes.model.Note;
+import com.bgrummitt.notes.R;
 
 import java.util.List;
 
