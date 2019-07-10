@@ -52,6 +52,7 @@ public class SwipeToDeleteOrCompleteCallback extends ItemTouchHelper.SimpleCallb
         int iconBottom = iconTop + iconDelete.getIntrinsicHeight();
 
         if(dX > 0){
+            // Being swiped to right
             int iconLeft = itemView.getLeft() + iconMargin + iconComplete.getIntrinsicWidth();
             int iconRight = itemView.getLeft() + iconMargin;
             iconComplete.setBounds(iconRight, iconTop, iconLeft, iconBottom);
@@ -59,6 +60,7 @@ public class SwipeToDeleteOrCompleteCallback extends ItemTouchHelper.SimpleCallb
             background.setColor(Color.BLUE);
             background.setBounds(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + ((int) dX) + backgroundCornerOffset, itemView.getBottom());
         }else if(dX < 0){
+            // Being swiped to left
             int iconLeft = itemView.getRight() - iconMargin - iconDelete.getIntrinsicWidth();
             int iconRight = itemView.getRight() - iconMargin;
             iconDelete.setBounds(iconLeft, iconTop, iconRight, iconBottom);
@@ -66,6 +68,7 @@ public class SwipeToDeleteOrCompleteCallback extends ItemTouchHelper.SimpleCallb
             background.setColor(Color.RED);
             background.setBounds(itemView.getRight() + ((int) dX) - backgroundCornerOffset, itemView.getTop(), itemView.getRight(), itemView.getBottom());
         }else{
+            // Reset icons / background when not being swiped
             background.setBounds(0, 0, 0, 0);
             iconComplete.setBounds(0, 0, 0, 0);
             iconDelete.setBounds(0, 0, 0, 0);

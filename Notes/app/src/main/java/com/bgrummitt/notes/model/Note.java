@@ -14,6 +14,12 @@ public class Note {
         this.DatabaseID = id;
     }
 
+    public Note(String subject, String noteBody, Boolean isCompleted){
+        this.subject = subject;
+        this.noteBody = noteBody;
+        this.isCompleted = isCompleted;
+    }
+
     public String getSubject() {
         return subject;
     }
@@ -30,12 +36,20 @@ public class Note {
         this.noteBody = noteBody;
     }
 
-    public Boolean getIsCompleted(){return isCompleted;}
+    public Boolean getIsCompleted(){
+        return isCompleted;
+    }
 
-    public void setIsCompleted(Boolean completed){ isCompleted = completed; }
+    public void setIsCompleted(Boolean completed){
+        isCompleted = completed;
+    }
 
     public int getDatabaseID(){
         return DatabaseID;
+    }
+
+    public void setDatabaseID(int id){
+        this.DatabaseID = id;
     }
 
 }

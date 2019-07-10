@@ -76,6 +76,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         mRecentlyDeletedItem = mNotes.get(position);
         mRecentlyDeletedPosition = position;
         mNotes.remove(position);
+        changeIDs(mRecentlyDeletedItem.getDatabaseID(), -1);
+        ((MainActivity)mContext).markNoteCompleted(mRecentlyDeletedItem.getDatabaseID());
         notifyItemRemoved(position);
         showUndoSnackBar();
     }
@@ -105,6 +107,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         }
 
         currentSelectAllState = !currentSelectAllState;
+    }
+
+    public void changeIDs(int idGreaterThan, int changeBy){
+        for(Note note : mNotes){
+            if(note.getDatabaseID() > idGreaterThan){
+                note.setDatabaseID(note.getDatabaseID() + changeBy);
+            }
+        }
     }
 
     @Override

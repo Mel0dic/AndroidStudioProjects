@@ -23,7 +23,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.bgrummitt.notes.controller.adapters.ListAdapter;
-import com.bgrummitt.notes.controller.databse.DatabaseAdapter;
 import com.bgrummitt.notes.controller.databse.DatabaseHelper;
 import com.bgrummitt.notes.model.Note;
 import com.bgrummitt.notes.R;
@@ -36,12 +35,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
-    private List<Note> notes = new ArrayList<>();
     private ListAdapter mListAdapter;
     private LinearLayoutManager mLayoutManager;
     private RecyclerView mRecyclerView;
     private DatabaseHelper mDatabaseHelper;
-    private int maxDbID = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,48 +58,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         mDatabaseHelper = new DatabaseHelper(this, "NOTES_DB");
-        Cursor cursor = mDatabaseHelper.getNotesToBeCompleted();
 
-        if(cursor.moveToFirst()){
-            int indexID = cursor.getColumnIndex("id_");
-            int indexSubject = cursor.getColumnIndex(mDatabaseHelper.SUBJECT_COLUMN_NAME);
-            int indexNote = cursor.getColumnIndex(mDatabaseHelper.NOTE_COLUMN_NAME);
+        List<Note> notes = getNotesFromDB();
 
-            int tempID;
-
-            while(!cursor.isAfterLast()){
-                tempID = cursor.getInt(indexID);
-                notes.add(new Note(cursor.getString(indexSubject), cursor.getString(indexNote), false, tempID));
-                if(tempID > maxDbID){
-                    maxDbID = tempID;
-                }
-                cursor.moveToNext();
-            }
-        }
-
-        // Create the list adapter and set the recycler views adapter to the created list adapter
-        mListAdapter = new ListAdapter(this, notes);
-        mRecyclerView.setAdapter(mListAdapter);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        // When at end of list give half oval show still pulling
-        mRecyclerView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteOrCompleteCallback(mListAdapter));
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+        setUpRecyclerView(notes);
 
         // Make it so fab disappears when scrolling down then reappears when scrolling back up
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-
                 // If the rate of change of y > 0 hide else show
                 if(dy > 0){
                     fab.hide();
                 } else{
                     fab.show();
                 }
-
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
@@ -185,8 +155,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Add note to db
         mDatabaseHelper.addNoteToBeCompleted(subject, note);
         // Add the note in the adapter and refresh
-        mListAdapter.addNote(new Note(subject, note, false, maxDbID + 1));
-        maxDbID += 1;
+        mListAdapter.addNote(new Note(subject, note, false, mDatabaseHelper.getToBeCompletedCurrentMaxID()));
         mListAdapter.notifyDataSetChanged();
     }
 
@@ -203,6 +172,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public List<Note> getNotesFromDB(){
+        Cursor cursor = mDatabaseHelper.getNotesToBeCompleted();
+
+        List<Note> notes = new ArrayList<>();
+
+        if(cursor.moveToFirst()){
+            int indexID = cursor.getColumnIndex(DatabaseHelper.ID_COLUMN_NAME);
+            int indexSubject = cursor.getColumnIndex(DatabaseHelper.SUBJECT_COLUMN_NAME);
+            int indexNote = cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_NAME);
+
+            while(!cursor.isAfterLast()){
+                notes.add(new Note(cursor.getString(indexSubject), cursor.getString(indexNote), false, cursor.getInt(indexID)));
+                cursor.moveToNext();
+            }
+        }
+
+        return notes;
+    }
+
+    public void setUpRecyclerView(List<Note> notes){
+        // Create the list adapter and set the recycler views adapter to the created list adapter
+        mListAdapter = new ListAdapter(this, notes);
+        mRecyclerView.setAdapter(mListAdapter);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        // When at end of list give half oval show still pulling
+        mRecyclerView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteOrCompleteCallback(mListAdapter));
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
 }
