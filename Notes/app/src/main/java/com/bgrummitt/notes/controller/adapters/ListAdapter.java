@@ -20,11 +20,11 @@ import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
 
-    private final Context mContext;
-    private final List<Note> mNotes;
-    private Note mRecentlyDeletedItem;
-    private int mRecentlyDeletedPosition;
-    private Boolean currentSelectAllState = false;
+    public final Context mContext;
+    public final List<Note> mNotes;
+    public Note mRecentlyDeletedItem;
+    public int mRecentlyDeletedPosition;
+    public Boolean currentSelectAllState = false;
 
     public ListAdapter (Context context, List<Note> notes){
         mContext = context;
@@ -70,51 +70,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     @Override
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
         holder.bindList(mNotes.get(position), position);
-    }
-
-    public void deleteItem(int position){
-        mRecentlyDeletedItem = mNotes.get(position);
-        mRecentlyDeletedPosition = position;
-        mNotes.remove(position);
-        changeIDs(mRecentlyDeletedItem.getDatabaseID(), -1);
-        ((MainActivity)mContext).markNoteCompleted(mRecentlyDeletedItem.getDatabaseID());
-        notifyItemRemoved(position);
-        showUndoSnackBar();
-    }
-
-    private void showUndoSnackBar() {
-        View view = ((Activity) mContext).findViewById(R.id.list);
-        Snackbar snackbar = Snackbar.make(view, R.string.snack_bar_undo,
-                Snackbar.LENGTH_LONG);
-        snackbar.setAction(R.string.snack_bar_undo, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ListAdapter.this.undoDelete();
-            }
-        });
-        snackbar.show();
-    }
-
-    private void undoDelete() {
-        mNotes.add(mRecentlyDeletedPosition,
-                mRecentlyDeletedItem);
-        notifyItemInserted(mRecentlyDeletedPosition);
-    }
-
-    public void selectAll(){
-        for(Note note : mNotes){
-            note.setIsCompleted(!currentSelectAllState);
-        }
-
-        currentSelectAllState = !currentSelectAllState;
-    }
-
-    public void changeIDs(int idGreaterThan, int changeBy){
-        for(Note note : mNotes){
-            if(note.getDatabaseID() > idGreaterThan){
-                note.setDatabaseID(note.getDatabaseID() + changeBy);
-            }
-        }
     }
 
     @Override

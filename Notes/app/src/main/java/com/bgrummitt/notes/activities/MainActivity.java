@@ -1,5 +1,6 @@
 package com.bgrummitt.notes.activities;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -22,8 +23,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.bgrummitt.notes.controller.adapters.CompletedAdapter;
 import com.bgrummitt.notes.controller.adapters.ListAdapter;
+import com.bgrummitt.notes.controller.adapters.TODOAdapter;
 import com.bgrummitt.notes.controller.databse.DatabaseHelper;
+import com.bgrummitt.notes.model.CompletedNote;
 import com.bgrummitt.notes.model.Note;
 import com.bgrummitt.notes.R;
 import com.bgrummitt.notes.controller.callback.SwipeToDeleteOrCompleteCallback;
@@ -35,7 +39,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
-    private ListAdapter mListAdapter;
+    private TODOAdapter mTODOListAdapter;
+    private CompletedAdapter mCompletedListAdapter;
     private LinearLayoutManager mLayoutManager;
     private RecyclerView mRecyclerView;
     private DatabaseHelper mDatabaseHelper;
@@ -61,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         List<Note> notes = getNotesFromDB();
 
-        setUpRecyclerView(notes);
+        setRecyclerViewToTODO(notes);
 
         // Make it so fab disappears when scrolling down then reappears when scrolling back up
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -108,8 +113,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return true;
         } else if (id == R.id.action_select_all) {
             Toast.makeText(this, "Select All", Toast.LENGTH_SHORT).show();
-            mListAdapter.selectAll();
-            mListAdapter.notifyDataSetChanged();
+            mTODOListAdapter.selectAll();
+            mTODOListAdapter.notifyDataSetChanged();
         }
 
         return super.onOptionsItemSelected(item);
@@ -155,8 +160,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Add note to db
         mDatabaseHelper.addNoteToBeCompleted(subject, note);
         // Add the note in the adapter and refresh
-        mListAdapter.addNote(new Note(subject, note, false, mDatabaseHelper.getToBeCompletedCurrentMaxID()));
-        mListAdapter.notifyDataSetChanged();
+        mTODOListAdapter.addNote(new Note(subject, note, false, mDatabaseHelper.getToBeCompletedCurrentMaxID()));
+        mTODOListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -164,14 +169,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if(id == R.id.Completed_List){
-
+            setRecyclerViewToCompleted(getCompletedNotesFromDB());
         }else if(id == R.id.TODO_List){
-
+            setRecyclerViewToTODO(getNotesFromDB());
         }
 
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void setRecyclerViewToCompleted(List<CompletedNote> notes){
+        // Create the list adapter and set the recycler views adapter to the created list adapter
+        mCompletedListAdapter = new CompletedAdapter(this, notes);
+        mRecyclerView.setAdapter(mCompletedListAdapter);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        // When at end of list give half oval show still pulling
+        mRecyclerView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteOrCompleteCallback(mCompletedListAdapter));
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+    }
+
+    private void setRecyclerViewToTODO(List<Note> notes){
+        // Create the list adapter and set the recycler views adapter to the created list adapter
+        mTODOListAdapter = new TODOAdapter(this, notes);
+        mRecyclerView.setAdapter(mTODOListAdapter);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        // When at end of list give half oval show still pulling
+        mRecyclerView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteOrCompleteCallback(mTODOListAdapter));
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     public List<Note> getNotesFromDB(){
@@ -193,17 +224,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return notes;
     }
 
-    public void setUpRecyclerView(List<Note> notes){
-        // Create the list adapter and set the recycler views adapter to the created list adapter
-        mListAdapter = new ListAdapter(this, notes);
-        mRecyclerView.setAdapter(mListAdapter);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        // When at end of list give half oval show still pulling
-        mRecyclerView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+    public List<CompletedNote> getCompletedNotesFromDB(){
+        Cursor cursor = mDatabaseHelper.getNotesCompleted();
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteOrCompleteCallback(mListAdapter));
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+        List<CompletedNote> notes = new ArrayList<>();
+
+        if(cursor.moveToNext()){
+            int indexID = cursor.getColumnIndex(DatabaseHelper.ID_COLUMN_NAME);
+            int indexSubject = cursor.getColumnIndex(DatabaseHelper.SUBJECT_COLUMN_NAME);
+            int indexNote = cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_NAME);
+            int indexDate = cursor.getColumnIndex(DatabaseHelper.DATE_COLUMN_NAME);
+
+            while(!cursor.isAfterLast()){
+                notes.add(new CompletedNote(cursor.getString(indexSubject), cursor.getString(indexNote), false, cursor.getInt(indexID), cursor.getString(indexDate)));
+                cursor.moveToNext();
+            }
+        }
+
+        return notes;
+
     }
 
 }

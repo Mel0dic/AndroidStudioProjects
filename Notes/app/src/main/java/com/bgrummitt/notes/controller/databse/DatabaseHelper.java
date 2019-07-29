@@ -112,12 +112,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         toBeCompletedCurrentMaxID -= 1;
     }
 
+    private String tableQuery = "SELECT * FROM %s";
+
     public Cursor getNotesToBeCompleted(){
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String query = "SELECT * FROM %s";
+        return db.rawQuery(String.format(tableQuery, TO_COMPLETE_TABLE_NAME), null);
+    }
 
-        return db.rawQuery(String.format(query, TO_COMPLETE_TABLE_NAME), null);
+    public Cursor getNotesCompleted(){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        return db.rawQuery(String.format(tableQuery, COMPLETED_TABLE_NAME), null);
     }
 
     public int getToBeCompletedCurrentMaxID(){

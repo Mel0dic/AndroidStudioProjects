@@ -11,15 +11,16 @@ import android.view.View;
 
 import com.bgrummitt.notes.R;
 import com.bgrummitt.notes.controller.adapters.ListAdapter;
+import com.bgrummitt.notes.controller.adapters.TODOAdapter;
 
 public class SwipeToDeleteOrCompleteCallback extends ItemTouchHelper.SimpleCallback {
 
-    private ListAdapter mListAdapter;
+    private TODOAdapter mListAdapter;
     private Drawable iconDelete;
     private Drawable iconComplete;
     private final ColorDrawable background;
 
-    public SwipeToDeleteOrCompleteCallback(ListAdapter adapter){
+    public SwipeToDeleteOrCompleteCallback(TODOAdapter adapter){
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
 
         mListAdapter = adapter;
