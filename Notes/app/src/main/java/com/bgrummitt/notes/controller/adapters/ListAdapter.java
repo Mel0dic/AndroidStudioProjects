@@ -18,12 +18,13 @@ import com.bgrummitt.notes.R;
 
 import java.util.List;
 
-public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
+public abstract class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
 
     public final Context mContext;
     public final List<Note> mNotes;
     public Note mRecentlyDeletedItem;
     public int mRecentlyDeletedPosition;
+    public int mRecentlyDeletedID;
     public Boolean currentSelectAllState = false;
 
     public ListAdapter (Context context, List<Note> notes){
@@ -87,6 +88,20 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
     public Context getContext(){
         return mContext;
+    }
+
+    public abstract void deleteItem(int position);
+
+    protected abstract void showUndoSnackBar();
+
+    protected abstract void undoDelete();
+
+    public void changeIDs(int idGreaterThan, int changeBy){
+        for(Note note : mNotes){
+            if(note.getDatabaseID() > idGreaterThan){
+                note.setDatabaseID(note.getDatabaseID() + changeBy);
+            }
+        }
     }
 
 }

@@ -21,14 +21,15 @@ public class TODOAdapter extends ListAdapter {
     public void deleteItem(int position){
         mRecentlyDeletedItem = mNotes.get(position);
         mRecentlyDeletedPosition = position;
+        mRecentlyDeletedID = mRecentlyDeletedItem.getDatabaseID();
         mNotes.remove(position);
         changeIDs(mRecentlyDeletedItem.getDatabaseID(), -1);
-        ((MainActivity)mContext).markNoteCompleted(mRecentlyDeletedItem.getDatabaseID());
+        ((MainActivity)mContext).markNoteCompleted(mRecentlyDeletedItem);
         notifyItemRemoved(position);
         showUndoSnackBar();
     }
 
-    private void showUndoSnackBar() {
+    protected void showUndoSnackBar() {
         View view = ((Activity) mContext).findViewById(R.id.list);
         Snackbar snackbar = Snackbar.make(view, R.string.snack_bar_undo,
                 Snackbar.LENGTH_LONG);
@@ -41,9 +42,10 @@ public class TODOAdapter extends ListAdapter {
         snackbar.show();
     }
 
-    private void undoDelete() {
+    protected void undoDelete() {
         mNotes.add(mRecentlyDeletedPosition,
                 mRecentlyDeletedItem);
+        ((MainActivity)mContext).insertNoteIntoTODO(mRecentlyDeletedItem, mRecentlyDeletedPosition);
         notifyItemInserted(mRecentlyDeletedPosition);
     }
 
@@ -54,14 +56,5 @@ public class TODOAdapter extends ListAdapter {
 
         currentSelectAllState = !currentSelectAllState;
     }
-
-    public void changeIDs(int idGreaterThan, int changeBy){
-        for(Note note : mNotes){
-            if(note.getDatabaseID() > idGreaterThan){
-                note.setDatabaseID(note.getDatabaseID() + changeBy);
-            }
-        }
-    }
-
 
 }

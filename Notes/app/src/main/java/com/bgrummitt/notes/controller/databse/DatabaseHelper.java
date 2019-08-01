@@ -7,6 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.bgrummitt.notes.model.CompletedNote;
+import com.bgrummitt.notes.model.Note;
+
+import java.util.Calendar;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private final static String TAG = DatabaseHelper.class.getSimpleName();
@@ -20,6 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private Context mContext;
     private int toBeCompletedCurrentMaxID;
+    private int completedCurrentMaxID;
 
     public DatabaseHelper(Context context, String db_name) {
         super(context, db_name, null, 1);
@@ -67,12 +73,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean addNoteToBeCompleted(String subject, String note){
+    public boolean addNoteToBeCompleted(String subject, String note, int ID){
         SQLiteDatabase db = this.getReadableDatabase();
 
         ContentValues cv = new ContentValues();
-        cv.put(ID_COLUMN_NAME, toBeCompletedCurrentMaxID + 1);
-        toBeCompletedCurrentMaxID += 1;
+        cv.put(ID_COLUMN_NAME, ID);
+        completedCurrentMaxID += 1;
         cv.put(SUBJECT_COLUMN_NAME, subject);
         cv.put(NOTE_COLUMN_NAME, note);
 
@@ -86,15 +92,50 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void moveNoteToCompleted(int id){
+    public void insertNoteIntoTODO(Note note, int oldPosition){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        changeDbIds(db, note.getDatabaseID() - 1, 1);
+
+        addNoteToBeCompleted(note.getSubject(), note.getNoteBody(), note.getDatabaseID());
+    }
+
+    public boolean addCompletedNote(CompletedNote note){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(ID_COLUMN_NAME, completedCurrentMaxID + 1);
+        toBeCompletedCurrentMaxID += 1;
+        cv.put(SUBJECT_COLUMN_NAME, note.getSubject());
+        cv.put(NOTE_COLUMN_NAME, note.getNoteBody());
+        cv.put(DATE_COLUMN_NAME, note.convertDateToString(note.getDateNoteCompleted()));
+
+        note.setDatabaseID(completedCurrentMaxID);
+
+        long result = db.insert(COMPLETED_TABLE_NAME, null, cv);
+
+        if(result == -1){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    public void moveNoteToCompleted(Note note){
 
         SQLiteDatabase db = this.getReadableDatabase();
 
-        boolean complete = db.delete(TO_COMPLETE_TABLE_NAME, ID_COLUMN_NAME + " = " + id, null) > 0;
+        deleteNoteFromTODO(db, note.getDatabaseID());
 
-        Log.d(TAG, String.format("ID deleting = %d, SUCCESS = %b", id, complete));
+        changeDbIds(db, note.getDatabaseID(), -1);
 
-        String query = "SELECT * FROM " + TO_COMPLETE_TABLE_NAME + " WHERE " + ID_COLUMN_NAME  + " > " + id;
+        addCompletedNote(new CompletedNote(note, Calendar.getInstance().getTime()));
+
+        toBeCompletedCurrentMaxID -= 1;
+    }
+
+    public void changeDbIds(SQLiteDatabase db, int noteID, int changeByX){
+        String query = "SELECT * FROM " + TO_COMPLETE_TABLE_NAME + " WHERE " + ID_COLUMN_NAME  + " > " + noteID;
 
         Cursor mCursor = db.rawQuery(query, null);
 
@@ -103,13 +144,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int posID;
             while(!mCursor.isAfterLast()){
                 posID = mCursor.getInt(columnID);
-                query = "UPDATE " + TO_COMPLETE_TABLE_NAME + " SET " + ID_COLUMN_NAME + " = " + (posID - 1) + " WHERE " + ID_COLUMN_NAME  + " = " + posID;
+                query = "UPDATE " + TO_COMPLETE_TABLE_NAME + " SET " + ID_COLUMN_NAME + " = " + (posID + changeByX) + " WHERE " + ID_COLUMN_NAME  + " = " + posID;
                 db.execSQL(query);
                 mCursor.moveToNext();
             }
         }
         mCursor.close();
-        toBeCompletedCurrentMaxID -= 1;
+    }
+
+    public void deleteNoteFromTODO(SQLiteDatabase db, int dbID){
+        boolean complete = db.delete(TO_COMPLETE_TABLE_NAME, ID_COLUMN_NAME + " = " + dbID, null) > 0;
+
+        Log.d(TAG, String.format("ID deleting = %d, SUCCESS = %b", dbID, complete));
+    }
+
+    public void deleteCompletedNote(Note note){
+        SQLiteDatabase db = this.getReadableDatabase();
+        boolean complete = db.delete(TO_COMPLETE_TABLE_NAME, ID_COLUMN_NAME + " = " + note.getDatabaseID(), null) > 0;
+
+        Log.d(TAG, String.format("ID deleting = %d, SUCCESS = %b", note.getDatabaseID(), complete));
     }
 
     private String tableQuery = "SELECT * FROM %s";

@@ -1,8 +1,6 @@
 package com.bgrummitt.notes.activities;
 
-import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -24,13 +22,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.bgrummitt.notes.controller.adapters.CompletedAdapter;
-import com.bgrummitt.notes.controller.adapters.ListAdapter;
 import com.bgrummitt.notes.controller.adapters.TODOAdapter;
 import com.bgrummitt.notes.controller.databse.DatabaseHelper;
 import com.bgrummitt.notes.model.CompletedNote;
 import com.bgrummitt.notes.model.Note;
 import com.bgrummitt.notes.R;
-import com.bgrummitt.notes.controller.callback.SwipeToDeleteOrCompleteCallback;
+import com.bgrummitt.notes.controller.callback.SwipeToCompleteCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LinearLayoutManager mLayoutManager;
     private RecyclerView mRecyclerView;
     private DatabaseHelper mDatabaseHelper;
+    private ItemTouchHelper itemTouchHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         List<Note> notes = getNotesFromDB();
 
-        setRecyclerViewToTODO(notes);
+        initialiseRecyclerView(notes);
 
         // Make it so fab disappears when scrolling down then reappears when scrolling back up
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -152,13 +150,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialog.show();
     }
 
-    public void markNoteCompleted(int id){
-        mDatabaseHelper.moveNoteToCompleted(id);
+    public void markNoteCompleted(Note note){
+        mDatabaseHelper.moveNoteToCompleted(note);
+    }
+
+    public void insertNoteIntoTODO(Note note, int oldPosition){
+        mDatabaseHelper.insertNoteIntoTODO(note, oldPosition);
+    }
+
+    public void deleteNoteFromCompleted(Note note){
+        mDatabaseHelper.deleteCompletedNote(note);
     }
 
     public void makeNewNote(String subject, String note){
         //Add note to db
-        mDatabaseHelper.addNoteToBeCompleted(subject, note);
+        mDatabaseHelper.addNoteToBeCompleted(subject, note, mDatabaseHelper.getToBeCompletedCurrentMaxID() + 1);
         // Add the note in the adapter and refresh
         mTODOListAdapter.addNote(new Note(subject, note, false, mDatabaseHelper.getToBeCompletedCurrentMaxID()));
         mTODOListAdapter.notifyDataSetChanged();
@@ -179,20 +185,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private void setRecyclerViewToCompleted(List<CompletedNote> notes){
-        // Create the list adapter and set the recycler views adapter to the created list adapter
-        mCompletedListAdapter = new CompletedAdapter(this, notes);
-        mRecyclerView.setAdapter(mCompletedListAdapter);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        // When at end of list give half oval show still pulling
-        mRecyclerView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteOrCompleteCallback(mCompletedListAdapter));
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
-    }
-
-    private void setRecyclerViewToTODO(List<Note> notes){
+    private void initialiseRecyclerView(List<Note> notes){
         // Create the list adapter and set the recycler views adapter to the created list adapter
         mTODOListAdapter = new TODOAdapter(this, notes);
         mRecyclerView.setAdapter(mTODOListAdapter);
@@ -201,7 +194,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // When at end of list give half oval show still pulling
         mRecyclerView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteOrCompleteCallback(mTODOListAdapter));
+        itemTouchHelper = new ItemTouchHelper(new SwipeToCompleteCallback(mTODOListAdapter));
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+    }
+
+    private void setRecyclerViewToCompleted(List<CompletedNote> notes){
+        // Create the list adapter and set the recycler views adapter to the created list adapter
+        mCompletedListAdapter = new CompletedAdapter(this, notes);
+        mRecyclerView.setAdapter(mCompletedListAdapter);
+
+        itemTouchHelper.attachToRecyclerView(null);
+    }
+
+    private void setRecyclerViewToTODO(List<Note> notes){
+        // Set the new adapter
+        mTODOListAdapter = new TODOAdapter(this, notes);
+        mRecyclerView.setAdapter(mTODOListAdapter);
+
+        itemTouchHelper.attachToRecyclerView(null);
+        itemTouchHelper = new ItemTouchHelper(new SwipeToCompleteCallback(mTODOListAdapter));
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
