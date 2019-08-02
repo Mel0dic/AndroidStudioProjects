@@ -46,6 +46,8 @@ public class TODOAdapter extends ListAdapter {
         mNotes.add(mRecentlyDeletedPosition,
                 mRecentlyDeletedItem);
         ((MainActivity)mContext).insertNoteIntoTODO(mRecentlyDeletedItem, mRecentlyDeletedPosition);
+        //TODO Delete from the completed db when undoing
+//        ((MainActivity)mContext).deleteNoteFromCompleted(mRecentlyDeletedItem);
         notifyItemInserted(mRecentlyDeletedPosition);
     }
 

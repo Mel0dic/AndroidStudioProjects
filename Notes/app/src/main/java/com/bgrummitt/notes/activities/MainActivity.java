@@ -93,6 +93,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+
+        mDatabaseHelper.close();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -151,20 +158,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void markNoteCompleted(Note note){
-        mDatabaseHelper.moveNoteToCompleted(note);
+        mDatabaseHelper.moveNoteToCompleted(mDatabaseHelper.getWritableDatabase(), note);
     }
 
     public void insertNoteIntoTODO(Note note, int oldPosition){
-        mDatabaseHelper.insertNoteIntoTODO(note, oldPosition);
+        mDatabaseHelper.insertNoteIntoTODO(mDatabaseHelper.getWritableDatabase(), note, oldPosition);
     }
 
     public void deleteNoteFromCompleted(Note note){
-        mDatabaseHelper.deleteCompletedNote(note);
+        mDatabaseHelper.deleteCompletedNote(mDatabaseHelper.getWritableDatabase(), note.getDatabaseID());
     }
 
     public void makeNewNote(String subject, String note){
         //Add note to db
-        mDatabaseHelper.addNoteToBeCompleted(subject, note, mDatabaseHelper.getToBeCompletedCurrentMaxID() + 1);
+        mDatabaseHelper.addNoteToBeCompleted(mDatabaseHelper.getWritableDatabase(), subject, note, mDatabaseHelper.getToBeCompletedCurrentMaxID() + 1);
         // Add the note in the adapter and refresh
         mTODOListAdapter.addNote(new Note(subject, note, false, mDatabaseHelper.getToBeCompletedCurrentMaxID()));
         mTODOListAdapter.notifyDataSetChanged();
@@ -217,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public List<Note> getNotesFromDB(){
-        Cursor cursor = mDatabaseHelper.getNotesToBeCompleted();
+        Cursor cursor = mDatabaseHelper.getNotesToBeCompleted(mDatabaseHelper.getReadableDatabase());
 
         List<Note> notes = new ArrayList<>();
 
@@ -236,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public List<CompletedNote> getCompletedNotesFromDB(){
-        Cursor cursor = mDatabaseHelper.getNotesCompleted();
+        Cursor cursor = mDatabaseHelper.getNotesCompleted(mDatabaseHelper.getReadableDatabase());
 
         List<CompletedNote> notes = new ArrayList<>();
 

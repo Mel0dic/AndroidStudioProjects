@@ -32,14 +32,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         this.mContext = context;
 
-        //Check if db is empty
+        //Check if to be completed db is empty
         SQLiteDatabase db = this.getReadableDatabase();
-        String count = "SELECT count(*) FROM " + TO_COMPLETE_TABLE_NAME;
-        Cursor mCursor = db.rawQuery(count, null);
+        String count = "SELECT count(*) FROM  %s";
+        String selectIDs = "SELECT " + ID_COLUMN_NAME + " FROM %s ORDER BY " + ID_COLUMN_NAME + " DESC;";
+        Cursor mCursor = db.rawQuery(String.format(count, TO_COMPLETE_TABLE_NAME), null);
         mCursor.moveToFirst();
         if(mCursor.getInt(0) > 0){
             // If the db is not empty select all columns order by largest first descending order
-            Cursor tempCursor = db.rawQuery("SELECT " + ID_COLUMN_NAME + " FROM " + TO_COMPLETE_TABLE_NAME + " ORDER BY " + ID_COLUMN_NAME + " DESC;", null);
+            Cursor tempCursor = db.rawQuery(String.format(selectIDs, TO_COMPLETE_TABLE_NAME), null);
             tempCursor.moveToFirst();
             // First item is the largest ID so set max id of off its id column
             toBeCompletedCurrentMaxID = tempCursor.getInt(0);
@@ -49,6 +50,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // If empty set to 0
             toBeCompletedCurrentMaxID = 0;
         }
+
+        //Check if completed db is empty
+        mCursor = db.rawQuery(String.format(count, COMPLETED_TABLE_NAME), null);
+        mCursor.moveToFirst();
+        if(mCursor.getInt(0) > 0){
+            // If the db is not empty select all columns order by largest first descending order
+            Cursor tempCursor = db.rawQuery(String.format(selectIDs, COMPLETED_TABLE_NAME), null);
+            tempCursor.moveToFirst();
+            // First item is the largest ID so set max id of off its id column
+            completedCurrentMaxID = tempCursor.getInt(0);
+            Log.d(TAG, Integer.toString(toBeCompletedCurrentMaxID));
+            tempCursor.close();
+            mCursor.close();
+        }else {
+            completedCurrentMaxID = 0;
+        }
+
     }
 
     @Override
@@ -73,12 +91,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean addNoteToBeCompleted(String subject, String note, int ID){
-        SQLiteDatabase db = this.getReadableDatabase();
-
+    /**
+     * Add a note to the database of completed notes
+     * @param db writable database
+     * @param subject string of subject of note
+     * @param note string of body of the note
+     * @param ID int of id of new note
+     * @return if completed successfully return true else false
+     */
+    public boolean addNoteToBeCompleted(SQLiteDatabase db, String subject, String note, int ID){
         ContentValues cv = new ContentValues();
         cv.put(ID_COLUMN_NAME, ID);
-        completedCurrentMaxID += 1;
+        toBeCompletedCurrentMaxID += 1;
         cv.put(SUBJECT_COLUMN_NAME, subject);
         cv.put(NOTE_COLUMN_NAME, note);
 
@@ -92,20 +116,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void insertNoteIntoTODO(Note note, int oldPosition){
-        SQLiteDatabase db = this.getReadableDatabase();
-
+    /**
+     * Insert a note in a given position in the T.O.D.O db
+     * @param db the db to be inserted to
+     * @param note the note to be inserted
+     * @param oldPosition the position being inserted into
+     */
+    public void insertNoteIntoTODO(SQLiteDatabase db, Note note, int oldPosition){
         changeDbIds(db, note.getDatabaseID() - 1, 1);
 
-        addNoteToBeCompleted(note.getSubject(), note.getNoteBody(), note.getDatabaseID());
+        addNoteToBeCompleted(db, note.getSubject(), note.getNoteBody(), note.getDatabaseID());
     }
 
-    public boolean addCompletedNote(CompletedNote note){
-        SQLiteDatabase db = this.getReadableDatabase();
-
+    /**
+     * Add a note to the database of completed notes
+     * @param db writable database
+     * @param note note to be written to db
+     * @return if completed successfully return true else false
+     */
+    public boolean addCompletedNote(SQLiteDatabase db, CompletedNote note){
         ContentValues cv = new ContentValues();
         cv.put(ID_COLUMN_NAME, completedCurrentMaxID + 1);
-        toBeCompletedCurrentMaxID += 1;
+        completedCurrentMaxID += 1;
         cv.put(SUBJECT_COLUMN_NAME, note.getSubject());
         cv.put(NOTE_COLUMN_NAME, note.getNoteBody());
         cv.put(DATE_COLUMN_NAME, note.convertDateToString(note.getDateNoteCompleted()));
@@ -121,19 +153,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void moveNoteToCompleted(Note note){
-
-        SQLiteDatabase db = this.getReadableDatabase();
+    /**
+     * Function to move a given note from the T.O.D.O db to the completed db
+     * @param db to add and remove notes from
+     * @param note to be removed from one and added to another
+     */
+    public void moveNoteToCompleted(SQLiteDatabase db, Note note){
 
         deleteNoteFromTODO(db, note.getDatabaseID());
 
         changeDbIds(db, note.getDatabaseID(), -1);
 
-        addCompletedNote(new CompletedNote(note, Calendar.getInstance().getTime()));
+        Log.d(TAG, Boolean.toString(addCompletedNote(db, new CompletedNote(note, Calendar.getInstance().getTime()))));
 
         toBeCompletedCurrentMaxID -= 1;
     }
 
+    /**
+     * Function to change all ids > than id of given noteID by a given value
+     * @param db writable datable
+     * @param noteID id of the where all notes with > id's changed
+     * @param changeByX the value to change the id's by
+     */
     public void changeDbIds(SQLiteDatabase db, int noteID, int changeByX){
         String query = "SELECT * FROM " + TO_COMPLETE_TABLE_NAME + " WHERE " + ID_COLUMN_NAME  + " > " + noteID;
 
@@ -152,30 +193,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         mCursor.close();
     }
 
+    /**
+     * Delete the given note from the db of notes to be completed using the database id in the note
+     * @param db db to be used for deletion (use getWritableDatabase)
+     * @param dbID of the entry in the db to delete
+     */
     public void deleteNoteFromTODO(SQLiteDatabase db, int dbID){
         boolean complete = db.delete(TO_COMPLETE_TABLE_NAME, ID_COLUMN_NAME + " = " + dbID, null) > 0;
 
         Log.d(TAG, String.format("ID deleting = %d, SUCCESS = %b", dbID, complete));
     }
 
-    public void deleteCompletedNote(Note note){
-        SQLiteDatabase db = this.getReadableDatabase();
-        boolean complete = db.delete(TO_COMPLETE_TABLE_NAME, ID_COLUMN_NAME + " = " + note.getDatabaseID(), null) > 0;
+    /**
+     * Delete the given note from the db of completed notes using the database id in the note
+     * @param db db to be used for deletion (use getWritableDatabase)
+     * @param dbID of the entry in the db to delete
+     */
+    public void deleteCompletedNote(SQLiteDatabase db, int dbID){
+        boolean complete = db.delete(TO_COMPLETE_TABLE_NAME, ID_COLUMN_NAME + " = " + dbID, null) > 0;
 
-        Log.d(TAG, String.format("ID deleting = %d, SUCCESS = %b", note.getDatabaseID(), complete));
+        Log.d(TAG, String.format("ID deleting = %d, SUCCESS = %b", dbID, complete));
     }
 
     private String tableQuery = "SELECT * FROM %s";
 
-    public Cursor getNotesToBeCompleted(){
-        SQLiteDatabase db = this.getReadableDatabase();
-
+    /**
+     * Get the Cursor of all the notes in the db of notes to be completed
+     * Close db after use .close()
+     * @param db A readable database to execute query
+     * @return Cursor of the data
+     */
+    public Cursor getNotesToBeCompleted(SQLiteDatabase db){
         return db.rawQuery(String.format(tableQuery, TO_COMPLETE_TABLE_NAME), null);
     }
 
-    public Cursor getNotesCompleted(){
-        SQLiteDatabase db = this.getReadableDatabase();
-
+    /**
+     * Get the Cursor of all the notes in the db of completed notes
+     * Close db after use .close()
+     * @param db A readable database to execute query
+     * @return Cursor of the data
+     */
+    public Cursor getNotesCompleted(SQLiteDatabase db){
         return db.rawQuery(String.format(tableQuery, COMPLETED_TABLE_NAME), null);
     }
 
