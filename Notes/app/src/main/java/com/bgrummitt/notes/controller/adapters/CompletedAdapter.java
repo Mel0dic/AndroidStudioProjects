@@ -43,16 +43,16 @@ public class CompletedAdapter extends ListAdapter {
         changeIDs(mRecentlyDeletedItem.getDatabaseID(), -1);
         ((MainActivity)mContext).deleteNoteFromCompleted(mRecentlyDeletedItem);
         notifyItemRemoved(position);
-        showUndoSnackBar();
+        showUndoSnackBar(mRecentlyDeletedItem.getDatabaseID());
     }
 
     @Override
-    protected void showUndoSnackBar() {
+    protected void showUndoSnackBar(int idToUndo) {
 
     }
 
     @Override
-    protected void undoDelete() {
+    protected void undoDelete(int idToUndo) {
 
     }
 }

@@ -16,8 +16,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private final static String TAG = DatabaseHelper.class.getSimpleName();
 
-    private final static String TO_COMPLETE_TABLE_NAME = "NOTES_TO_COMPLETE";
-    private final static String COMPLETED_TABLE_NAME = "NOTES_COMPLETED";
+    public final static String TO_COMPLETE_TABLE_NAME = "NOTES_TO_COMPLETE";
+    public final static String COMPLETED_TABLE_NAME = "NOTES_COMPLETED";
     public final static String ID_COLUMN_NAME = "NOTE_ID";
     public final static String SUBJECT_COLUMN_NAME = "SUBJECT";
     public final static String NOTE_COLUMN_NAME = "NOTE";
@@ -157,16 +157,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Function to move a given note from the T.O.D.O db to the completed db
      * @param db to add and remove notes from
      * @param note to be removed from one and added to another
+     * @return db id of note in completed note
      */
-    public void moveNoteToCompleted(SQLiteDatabase db, Note note){
+    public int moveNoteToCompleted(SQLiteDatabase db, Note note){
 
-        deleteNoteFromTODO(db, note.getDatabaseID());
+        deleteNoteFromDB(db, DatabaseHelper.TO_COMPLETE_TABLE_NAME, note.getDatabaseID());
 
         changeDbIds(db, note.getDatabaseID(), -1);
 
-        Log.d(TAG, Boolean.toString(addCompletedNote(db, new CompletedNote(note, Calendar.getInstance().getTime()))));
+        CompletedNote cNote = new CompletedNote(note, Calendar.getInstance().getTime());
+
+        Log.d(TAG, Boolean.toString(addCompletedNote(db, cNote)));
 
         toBeCompletedCurrentMaxID -= 1;
+
+        return cNote.getDatabaseID();
     }
 
     /**
@@ -194,23 +199,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Delete the given note from the db of notes to be completed using the database id in the note
+     * Delete the given note from the db given id in the note
      * @param db db to be used for deletion (use getWritableDatabase)
+     * @param dbToDeleteFrom the db name to be deleted from
      * @param dbID of the entry in the db to delete
      */
-    public void deleteNoteFromTODO(SQLiteDatabase db, int dbID){
-        boolean complete = db.delete(TO_COMPLETE_TABLE_NAME, ID_COLUMN_NAME + " = " + dbID, null) > 0;
-
-        Log.d(TAG, String.format("ID deleting = %d, SUCCESS = %b", dbID, complete));
-    }
-
-    /**
-     * Delete the given note from the db of completed notes using the database id in the note
-     * @param db db to be used for deletion (use getWritableDatabase)
-     * @param dbID of the entry in the db to delete
-     */
-    public void deleteCompletedNote(SQLiteDatabase db, int dbID){
-        boolean complete = db.delete(TO_COMPLETE_TABLE_NAME, ID_COLUMN_NAME + " = " + dbID, null) > 0;
+    public void deleteNoteFromDB(SQLiteDatabase db, String dbToDeleteFrom, int dbID){
+        boolean complete = db.delete(dbToDeleteFrom, ID_COLUMN_NAME + " = " + dbID, null) > 0;
 
         Log.d(TAG, String.format("ID deleting = %d, SUCCESS = %b", dbID, complete));
     }

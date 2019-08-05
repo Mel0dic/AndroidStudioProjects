@@ -92,9 +92,9 @@ public abstract class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListV
 
     public abstract void deleteItem(int position);
 
-    protected abstract void showUndoSnackBar();
+    protected abstract void showUndoSnackBar(int idToUndo);
 
-    protected abstract void undoDelete();
+    protected abstract void undoDelete(int idToUndo);
 
     public void changeIDs(int idGreaterThan, int changeBy){
         for(Note note : mNotes){

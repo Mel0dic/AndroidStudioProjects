@@ -3,6 +3,7 @@ package com.bgrummitt.notes.controller.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 
 import com.bgrummitt.notes.R;
@@ -14,6 +15,8 @@ import java.util.List;
 
 public class TODOAdapter extends ListAdapter {
 
+    private static final String TAG = TODOAdapter.class.getSimpleName();
+
     public TODOAdapter(Context context, List<Note> notes) {
         super(context, notes);
     }
@@ -24,30 +27,32 @@ public class TODOAdapter extends ListAdapter {
         mRecentlyDeletedID = mRecentlyDeletedItem.getDatabaseID();
         mNotes.remove(position);
         changeIDs(mRecentlyDeletedItem.getDatabaseID(), -1);
-        ((MainActivity)mContext).markNoteCompleted(mRecentlyDeletedItem);
+        int tempNewNoteID = ((MainActivity)mContext).markNoteCompleted(mRecentlyDeletedItem);
         notifyItemRemoved(position);
-        showUndoSnackBar();
+        showUndoSnackBar(tempNewNoteID);
     }
 
-    protected void showUndoSnackBar() {
+    protected void showUndoSnackBar(final int idToUndo) {
         View view = ((Activity) mContext).findViewById(R.id.list);
         Snackbar snackbar = Snackbar.make(view, R.string.snack_bar_undo,
                 Snackbar.LENGTH_LONG);
         snackbar.setAction(R.string.snack_bar_undo, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TODOAdapter.this.undoDelete();
+                TODOAdapter.this.undoDelete(idToUndo);
             }
         });
         snackbar.show();
     }
 
-    protected void undoDelete() {
+    protected void undoDelete(int idToUndo) {
         mNotes.add(mRecentlyDeletedPosition,
                 mRecentlyDeletedItem);
+        Log.d(TAG, String.format("Undoing Delete ID = %d", mRecentlyDeletedItem.getDatabaseID()));
         ((MainActivity)mContext).insertNoteIntoTODO(mRecentlyDeletedItem, mRecentlyDeletedPosition);
-        //TODO Delete from the completed db when undoing
-//        ((MainActivity)mContext).deleteNoteFromCompleted(mRecentlyDeletedItem);
+        mRecentlyDeletedItem.setDatabaseID(idToUndo);
+        Log.d(TAG, String.format("ID in Completed DB = %d", mRecentlyDeletedItem.getDatabaseID()));
+        ((MainActivity)mContext).deleteNoteFromCompleted(mRecentlyDeletedItem);
         notifyItemInserted(mRecentlyDeletedPosition);
     }
 

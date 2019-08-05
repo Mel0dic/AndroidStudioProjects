@@ -157,8 +157,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialog.show();
     }
 
-    public void markNoteCompleted(Note note){
-        mDatabaseHelper.moveNoteToCompleted(mDatabaseHelper.getWritableDatabase(), note);
+    /**
+     * Function to move note from T.O.D.O to completed
+     * @param note to be moved
+     * @return id of note in the completed db
+     */
+    public int markNoteCompleted(Note note){
+        return mDatabaseHelper.moveNoteToCompleted(mDatabaseHelper.getWritableDatabase(), note);
     }
 
     public void insertNoteIntoTODO(Note note, int oldPosition){
@@ -166,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void deleteNoteFromCompleted(Note note){
-        mDatabaseHelper.deleteCompletedNote(mDatabaseHelper.getWritableDatabase(), note.getDatabaseID());
+        mDatabaseHelper.deleteNoteFromDB(mDatabaseHelper.getWritableDatabase(), DatabaseHelper.COMPLETED_TABLE_NAME, note.getDatabaseID());
     }
 
     public void makeNewNote(String subject, String note){
