@@ -46,12 +46,9 @@ public class TODOAdapter extends ListAdapter {
     }
 
     protected void undoDelete(int idToUndo) {
-        mNotes.add(mRecentlyDeletedPosition,
-                mRecentlyDeletedItem);
-        Log.d(TAG, String.format("Undoing Delete ID = %d", mRecentlyDeletedItem.getDatabaseID()));
-        ((MainActivity)mContext).insertNoteIntoTODO(mRecentlyDeletedItem, mRecentlyDeletedPosition);
+        mNotes.add(mRecentlyDeletedPosition, mRecentlyDeletedItem);
+        ((MainActivity)mContext).insertNoteIntoTODO(mRecentlyDeletedItem);
         mRecentlyDeletedItem.setDatabaseID(idToUndo);
-        Log.d(TAG, String.format("ID in Completed DB = %d", mRecentlyDeletedItem.getDatabaseID()));
         ((MainActivity)mContext).deleteNoteFromCompleted(mRecentlyDeletedItem);
         notifyItemInserted(mRecentlyDeletedPosition);
     }

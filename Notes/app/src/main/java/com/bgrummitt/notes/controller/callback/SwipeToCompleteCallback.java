@@ -10,7 +10,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
 import com.bgrummitt.notes.R;
-import com.bgrummitt.notes.controller.adapters.ListAdapter;
 import com.bgrummitt.notes.controller.adapters.TODOAdapter;
 
 public class SwipeToCompleteCallback extends ItemTouchHelper.SimpleCallback {

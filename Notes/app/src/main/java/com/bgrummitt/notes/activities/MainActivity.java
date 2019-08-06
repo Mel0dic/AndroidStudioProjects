@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.bgrummitt.notes.controller.adapters.CompletedAdapter;
 import com.bgrummitt.notes.controller.adapters.TODOAdapter;
+import com.bgrummitt.notes.controller.callback.SwipeToDeleteCallback;
 import com.bgrummitt.notes.controller.databse.DatabaseHelper;
 import com.bgrummitt.notes.model.CompletedNote;
 import com.bgrummitt.notes.model.Note;
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LinearLayoutManager mLayoutManager;
     private RecyclerView mRecyclerView;
     private DatabaseHelper mDatabaseHelper;
-    private ItemTouchHelper itemTouchHelper;
+    private ItemTouchHelper mItemTouchHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        // Add "HamBurger" icon inn toolbar with open close action and animation
+        // Add "HamBurger" icon in the toolbar with open close action and animation
         // Retrieve draw and navigationView
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -92,10 +93,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    /**
+     * When the app is stopped in its lifecycle
+     */
     @Override
     protected void onStop() {
         super.onStop();
 
+        // Close the database.
         mDatabaseHelper.close();
     }
 
@@ -163,20 +168,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @return id of note in the completed db
      */
     public int markNoteCompleted(Note note){
-        return mDatabaseHelper.moveNoteToCompleted(mDatabaseHelper.getWritableDatabase(), note);
+        return mDatabaseHelper.moveNoteToCompleted(note);
     }
 
-    public void insertNoteIntoTODO(Note note, int oldPosition){
-        mDatabaseHelper.insertNoteIntoTODO(mDatabaseHelper.getWritableDatabase(), note, oldPosition);
+    /**
+     * Insert note into the T.O.D.O db
+     * @param note to insert into the db
+     */
+    public void insertNoteIntoTODO(Note note){
+        mDatabaseHelper.insertNoteIntoTODO(note);
     }
 
+    /**
+     * Insert note into the completed db
+     * @param note to insert into the db
+     */
+    public void insertNoteIntoCompleted(CompletedNote note){
+        mDatabaseHelper.insertNoteIntoCompleted(note);
+    }
+
+    /**
+     * Delete note from the completed db
+     * @param note to be deleted
+     */
     public void deleteNoteFromCompleted(Note note){
-        mDatabaseHelper.deleteNoteFromDB(mDatabaseHelper.getWritableDatabase(), DatabaseHelper.COMPLETED_TABLE_NAME, note.getDatabaseID());
+        mDatabaseHelper.deleteNoteFromDB(DatabaseHelper.COMPLETED_TABLE_NAME, note.getDatabaseID());
+        mDatabaseHelper.changeDbIds(DatabaseHelper.COMPLETED_TABLE_NAME, note.getDatabaseID(), -1);
     }
 
+    /**
+     * Create a new note and insert it into the db and Recycler view
+     * @param subject of the note to be inserted into the db
+     * @param note body of the note to be inserted into the db
+     */
     public void makeNewNote(String subject, String note){
         //Add note to db
-        mDatabaseHelper.addNoteToBeCompleted(mDatabaseHelper.getWritableDatabase(), subject, note, mDatabaseHelper.getToBeCompletedCurrentMaxID() + 1);
+        mDatabaseHelper.addNoteToBeCompleted(subject, note, mDatabaseHelper.getToBeCompletedCurrentMaxID() + 1);
         // Add the note in the adapter and refresh
         mTODOListAdapter.addNote(new Note(subject, note, false, mDatabaseHelper.getToBeCompletedCurrentMaxID()));
         mTODOListAdapter.notifyDataSetChanged();
@@ -197,6 +224,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    /**
+     * Set up the default look of the recycler view
+     * @param notes to populate the recycler view with
+     */
     private void initialiseRecyclerView(List<Note> notes){
         // Create the list adapter and set the recycler views adapter to the created list adapter
         mTODOListAdapter = new TODOAdapter(this, notes);
@@ -206,38 +237,55 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // When at end of list give half oval show still pulling
         mRecyclerView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
 
-        itemTouchHelper = new ItemTouchHelper(new SwipeToCompleteCallback(mTODOListAdapter));
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+        // Default Swipe callback
+        mItemTouchHelper = new ItemTouchHelper(new SwipeToCompleteCallback(mTODOListAdapter));
+        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
+    /**
+     * Populate the recycler view with the completed notes
+     * @param notes to populate the recycler view
+     */
     private void setRecyclerViewToCompleted(List<CompletedNote> notes){
         // Create the list adapter and set the recycler views adapter to the created list adapter
         mCompletedListAdapter = new CompletedAdapter(this, notes);
         mRecyclerView.setAdapter(mCompletedListAdapter);
 
-        itemTouchHelper.attachToRecyclerView(null);
+        // Remove the old SwipeCallback and replace with correct Callback
+        mItemTouchHelper.attachToRecyclerView(null);
+        mItemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(mCompletedListAdapter));
+        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
+    /**
+     * Populate the recycler view with the notes T.O.D.O
+     * @param notes to populate the recycler view
+     */
     private void setRecyclerViewToTODO(List<Note> notes){
         // Set the new adapter
         mTODOListAdapter = new TODOAdapter(this, notes);
         mRecyclerView.setAdapter(mTODOListAdapter);
 
-        itemTouchHelper.attachToRecyclerView(null);
-        itemTouchHelper = new ItemTouchHelper(new SwipeToCompleteCallback(mTODOListAdapter));
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+        // Remove the old SwipeCallback and replace with correct Callback
+        mItemTouchHelper.attachToRecyclerView(null);
+        mItemTouchHelper = new ItemTouchHelper(new SwipeToCompleteCallback(mTODOListAdapter));
+        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
+    /**
+     * Retrieve notes from the database of notes to be completed
+     * @return list of T.O.D.O notes
+     */
     public List<Note> getNotesFromDB(){
-        Cursor cursor = mDatabaseHelper.getNotesToBeCompleted(mDatabaseHelper.getReadableDatabase());
+        Cursor cursor = mDatabaseHelper.getNotesFromDB(DatabaseHelper.TO_COMPLETE_TABLE_NAME);
 
         List<Note> notes = new ArrayList<>();
 
-        if(cursor.moveToFirst()){
-            int indexID = cursor.getColumnIndex(DatabaseHelper.ID_COLUMN_NAME);
-            int indexSubject = cursor.getColumnIndex(DatabaseHelper.SUBJECT_COLUMN_NAME);
-            int indexNote = cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_NAME);
+        int indexID = cursor.getColumnIndex(DatabaseHelper.ID_COLUMN_NAME);
+        int indexSubject = cursor.getColumnIndex(DatabaseHelper.SUBJECT_COLUMN_NAME);
+        int indexNote = cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_NAME);
 
+        if(cursor.moveToFirst()){
             while(!cursor.isAfterLast()){
                 notes.add(new Note(cursor.getString(indexSubject), cursor.getString(indexNote), false, cursor.getInt(indexID)));
                 cursor.moveToNext();
@@ -247,17 +295,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return notes;
     }
 
+    /**
+     * Retrieve notes from the database of completed notes
+     * @return list of completed notes
+     */
     public List<CompletedNote> getCompletedNotesFromDB(){
-        Cursor cursor = mDatabaseHelper.getNotesCompleted(mDatabaseHelper.getReadableDatabase());
+        Cursor cursor = mDatabaseHelper.getNotesFromDB(DatabaseHelper.COMPLETED_TABLE_NAME);
 
         List<CompletedNote> notes = new ArrayList<>();
 
-        if(cursor.moveToNext()){
-            int indexID = cursor.getColumnIndex(DatabaseHelper.ID_COLUMN_NAME);
-            int indexSubject = cursor.getColumnIndex(DatabaseHelper.SUBJECT_COLUMN_NAME);
-            int indexNote = cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_NAME);
-            int indexDate = cursor.getColumnIndex(DatabaseHelper.DATE_COLUMN_NAME);
+        int indexID = cursor.getColumnIndex(DatabaseHelper.ID_COLUMN_NAME);
+        int indexSubject = cursor.getColumnIndex(DatabaseHelper.SUBJECT_COLUMN_NAME);
+        int indexNote = cursor.getColumnIndex(DatabaseHelper.NOTE_COLUMN_NAME);
+        int indexDate = cursor.getColumnIndex(DatabaseHelper.DATE_COLUMN_NAME);
 
+        // For every entry in the cursor retrieve every note and move to the next
+        if(cursor.moveToNext()){
             while(!cursor.isAfterLast()){
                 notes.add(new CompletedNote(cursor.getString(indexSubject), cursor.getString(indexNote), false, cursor.getInt(indexID), cursor.getString(indexDate)));
                 cursor.moveToNext();

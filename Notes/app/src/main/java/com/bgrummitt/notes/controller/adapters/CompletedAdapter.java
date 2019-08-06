@@ -1,7 +1,11 @@
 package com.bgrummitt.notes.controller.adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 
+import com.bgrummitt.notes.R;
 import com.bgrummitt.notes.activities.MainActivity;
 import com.bgrummitt.notes.model.CompletedNote;
 import com.bgrummitt.notes.model.Note;
@@ -39,7 +43,9 @@ public class CompletedAdapter extends ListAdapter {
     public void deleteItem(int position) {
         mRecentlyDeletedItem = mNotes.get(position);
         mRecentlyDeletedPosition = position;
+        mRecentlyDeletedDate = mNoteDates.get(position);
         mNotes.remove(position);
+        mNoteDates.remove(position);
         changeIDs(mRecentlyDeletedItem.getDatabaseID(), -1);
         ((MainActivity)mContext).deleteNoteFromCompleted(mRecentlyDeletedItem);
         notifyItemRemoved(position);
@@ -47,12 +53,24 @@ public class CompletedAdapter extends ListAdapter {
     }
 
     @Override
-    protected void showUndoSnackBar(int idToUndo) {
-
+    protected void showUndoSnackBar(final int idToUndo) {
+        View view = ((Activity) mContext).findViewById(R.id.list);
+        Snackbar snackbar = Snackbar.make(view, R.string.snack_bar_undo,
+                Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.snack_bar_undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CompletedAdapter.this.undoDelete(idToUndo);
+            }
+        });
+        snackbar.show();
     }
 
     @Override
     protected void undoDelete(int idToUndo) {
-
+        mNotes.add(mRecentlyDeletedPosition, mRecentlyDeletedItem);
+        mNoteDates.add(mRecentlyDeletedPosition, mRecentlyDeletedDate);
+        ((MainActivity)mContext).insertNoteIntoCompleted(new CompletedNote(mRecentlyDeletedItem, mRecentlyDeletedDate));
+        notifyItemInserted(mRecentlyDeletedPosition);
     }
 }
