@@ -23,8 +23,6 @@ public abstract class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListV
     public final Context mContext;
     public final List<Note> mNotes;
     public Note mRecentlyDeletedItem;
-    public int mRecentlyDeletedPosition;
-    public int mRecentlyDeletedID;
     public Boolean currentSelectAllState = false;
 
     public ListAdapter (Context context, List<Note> notes){
@@ -94,14 +92,17 @@ public abstract class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListV
 
     protected abstract void showUndoSnackBar(int idToUndo);
 
-    protected abstract void undoDelete(int idToUndo);
-
     public void changeIDs(int idGreaterThan, int changeBy){
         for(Note note : mNotes){
             if(note.getDatabaseID() > idGreaterThan){
                 note.setDatabaseID(note.getDatabaseID() + changeBy);
             }
         }
+    }
+
+    public void insertNoteIntoList(Note note, int position){
+        mNotes.add(position, note);
+        notifyItemInserted(position);
     }
 
 }

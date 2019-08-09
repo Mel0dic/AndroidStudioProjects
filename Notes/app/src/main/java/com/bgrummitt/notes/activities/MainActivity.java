@@ -105,6 +105,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        mDatabaseHelper.checkIfDBValid();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -165,26 +172,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     /**
      * Function to move note from T.O.D.O to completed
      * @param note to be moved
-     * @return id of note in the completed db
      */
-    public int markNoteCompleted(Note note){
-        return mDatabaseHelper.moveNoteToCompleted(note);
-    }
-
-    /**
-     * Insert note into the T.O.D.O db
-     * @param note to insert into the db
-     */
-    public void insertNoteIntoTODO(Note note){
-        mDatabaseHelper.insertNoteIntoTODO(note);
-    }
-
-    /**
-     * Insert note into the completed db
-     * @param note to insert into the db
-     */
-    public void insertNoteIntoCompleted(CompletedNote note){
-        mDatabaseHelper.insertNoteIntoCompleted(note);
+    public void markNoteCompleted(Note note){
+        mDatabaseHelper.moveNoteToCompleted(note);
     }
 
     /**

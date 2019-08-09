@@ -23,13 +23,9 @@ public class TODOAdapter extends ListAdapter {
 
     public void deleteItem(int position){
         mRecentlyDeletedItem = mNotes.get(position);
-        mRecentlyDeletedPosition = position;
-        mRecentlyDeletedID = mRecentlyDeletedItem.getDatabaseID();
         mNotes.remove(position);
-        changeIDs(mRecentlyDeletedItem.getDatabaseID(), -1);
-        int tempNewNoteID = ((MainActivity)mContext).markNoteCompleted(mRecentlyDeletedItem);
         notifyItemRemoved(position);
-        showUndoSnackBar(tempNewNoteID);
+        showUndoSnackBar(position);
     }
 
     protected void showUndoSnackBar(final int idToUndo) {
@@ -39,25 +35,33 @@ public class TODOAdapter extends ListAdapter {
         snackbar.setAction(R.string.snack_bar_undo, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TODOAdapter.this.undoDelete(idToUndo);
+                insertNoteIntoList(mRecentlyDeletedItem, idToUndo);
             }
+        });
+        snackbar.addCallback(new Snackbar.Callback(){
+
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+                Log.d(TAG, "Snackbar Dismissed");
+                if(event != Snackbar.Callback.DISMISS_EVENT_ACTION){
+                    Log.d(TAG, "Snackbar Dismissed By Timeout / New SnackBar / Swipe");
+                    removeItemFromDB(mRecentlyDeletedItem);
+                }
+            }
+
         });
         snackbar.show();
     }
 
-    protected void undoDelete(int idToUndo) {
-        mNotes.add(mRecentlyDeletedPosition, mRecentlyDeletedItem);
-        ((MainActivity)mContext).insertNoteIntoTODO(mRecentlyDeletedItem);
-        mRecentlyDeletedItem.setDatabaseID(idToUndo);
-        ((MainActivity)mContext).deleteNoteFromCompleted(mRecentlyDeletedItem);
-        notifyItemInserted(mRecentlyDeletedPosition);
+    private void removeItemFromDB(Note note){
+        changeIDs(note.getDatabaseID(), -1);
+        ((MainActivity)mContext).markNoteCompleted(note);
     }
 
     public void selectAll(){
         for(Note note : mNotes){
             note.setIsCompleted(!currentSelectAllState);
         }
-
         currentSelectAllState = !currentSelectAllState;
     }
 

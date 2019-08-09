@@ -68,7 +68,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             completedCurrentMaxID = 0;
         }
 
-        mDatabase = db;
+        db.close();
+
+        mDatabase = getWritableDatabase();
 
     }
 
@@ -161,9 +163,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Function to move a given note from the T.O.D.O db to the completed db
      * @param note to be removed from one and added to another
-     * @return db id of note in completed note
      */
-    public int moveNoteToCompleted(Note note){
+    public void moveNoteToCompleted(Note note){
 
         deleteNoteFromDB(TO_COMPLETE_TABLE_NAME, note.getDatabaseID());
 
@@ -174,8 +175,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.d(TAG, Boolean.toString(addCompletedNote(cNote)));
 
         toBeCompletedCurrentMaxID -= 1;
-
-        return cNote.getDatabaseID();
     }
 
     /**
@@ -225,6 +224,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int getToBeCompletedCurrentMaxID(){
         return toBeCompletedCurrentMaxID;
+    }
+
+    public void checkIfDBValid(){
+        if(!mDatabase.isOpen()){
+            mDatabase = this.getWritableDatabase();
+        }
     }
 
 }

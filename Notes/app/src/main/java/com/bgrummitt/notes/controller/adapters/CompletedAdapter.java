@@ -2,7 +2,9 @@ package com.bgrummitt.notes.controller.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 
 import com.bgrummitt.notes.R;
@@ -15,6 +17,8 @@ import java.util.Date;
 import java.util.List;
 
 public class CompletedAdapter extends ListAdapter {
+
+    private static final String TAG = TODOAdapter.class.getSimpleName();
 
     private List<Date> mNoteDates;
     private Date mRecentlyDeletedDate;
@@ -33,21 +37,23 @@ public class CompletedAdapter extends ListAdapter {
         List<Note> convertedNotes = new ArrayList<>();
 
         for(CompletedNote note : notes){
-            convertedNotes.add(new Note(note.getSubject(), note.getNoteBody(), note.getIsCompleted(), note.getDatabaseID()));
+            convertedNotes.add(convertNote(note));
         }
 
         return convertedNotes;
     }
 
+    public static Note convertNote(CompletedNote note){
+        return new Note(note.getSubject(), note.getNoteBody(), note.getIsCompleted(), note.getDatabaseID());
+    }
+
     @Override
     public void deleteItem(int position) {
         mRecentlyDeletedItem = mNotes.get(position);
-        mRecentlyDeletedPosition = position;
         mRecentlyDeletedDate = mNoteDates.get(position);
         mNotes.remove(position);
         mNoteDates.remove(position);
         changeIDs(mRecentlyDeletedItem.getDatabaseID(), -1);
-        ((MainActivity)mContext).deleteNoteFromCompleted(mRecentlyDeletedItem);
         notifyItemRemoved(position);
         showUndoSnackBar(mRecentlyDeletedItem.getDatabaseID());
     }
@@ -60,17 +66,28 @@ public class CompletedAdapter extends ListAdapter {
         snackbar.setAction(R.string.snack_bar_undo, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CompletedAdapter.this.undoDelete(idToUndo);
+                insertNoteIntoList(mRecentlyDeletedItem, idToUndo);
+                mNoteDates.add(idToUndo, mRecentlyDeletedDate);
             }
+        });
+        snackbar.addCallback(new Snackbar.Callback(){
+
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+                Log.d(TAG, "Snackbar Dismissed");
+                if(event != Snackbar.Callback.DISMISS_EVENT_ACTION){
+                    Log.d(TAG, "Snackbar Dismissed By Timeout / New SnackBar / Swipe");
+                    removeItemFromDB(new CompletedNote(mRecentlyDeletedItem, mRecentlyDeletedDate));
+                }
+            }
+
         });
         snackbar.show();
     }
 
-    @Override
-    protected void undoDelete(int idToUndo) {
-        mNotes.add(mRecentlyDeletedPosition, mRecentlyDeletedItem);
-        mNoteDates.add(mRecentlyDeletedPosition, mRecentlyDeletedDate);
-        ((MainActivity)mContext).insertNoteIntoCompleted(new CompletedNote(mRecentlyDeletedItem, mRecentlyDeletedDate));
-        notifyItemInserted(mRecentlyDeletedPosition);
+    private void removeItemFromDB(CompletedNote note){
+        changeIDs(note.getDatabaseID(), -1);
+        ((MainActivity)mContext).deleteNoteFromCompleted(note);
     }
+
 }
