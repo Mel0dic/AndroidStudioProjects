@@ -1,5 +1,6 @@
 package com.bgrummitt.notes.activities;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -36,6 +37,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
+
+    public static final int NOTE_EDITED_ACTIVITY_RESULT = 434;
 
     private TODOAdapter mTODOListAdapter;
     private CompletedAdapter mCompletedListAdapter;
@@ -201,12 +204,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
 
-        if(id == R.id.Completed_List){
-            setRecyclerViewToCompleted(getCompletedNotesFromDB());
-        }else if(id == R.id.TODO_List){
-            setRecyclerViewToTODO(getNotesFromDB());
+        switch (item.getItemId()){
+            case R.id.Completed_List:
+                setRecyclerViewToCompleted(getCompletedNotesFromDB());
+                break;
+            case R.id.TODO_List:
+                setRecyclerViewToTODO(getNotesFromDB());
+                break;
         }
 
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
@@ -311,4 +316,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == NOTE_EDITED_ACTIVITY_RESULT){
+
+        }
+    }
 }

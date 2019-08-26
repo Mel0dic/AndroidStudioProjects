@@ -90,4 +90,8 @@ public class CompletedAdapter extends ListAdapter {
         ((MainActivity)mContext).deleteNoteFromCompleted(note);
     }
 
+    public ListTypes getType(){
+        return ListTypes.COMPLETED_LIST;
+    }
+
 }

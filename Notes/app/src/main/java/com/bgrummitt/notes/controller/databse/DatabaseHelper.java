@@ -11,6 +11,7 @@ import com.bgrummitt.notes.model.CompletedNote;
 import com.bgrummitt.notes.model.Note;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -198,6 +199,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
         mCursor.close();
+    }
+
+    public void editNote(String tableName, int dbID, String subject, String body){
+        String query = "UPDATE %s SET %s = \"%s\", %s = \"%s\" WHERE %s = %d";
+        query = String.format(Locale.getDefault(), query, tableName, SUBJECT_COLUMN_NAME, subject, NOTE_COLUMN_NAME, body, ID_COLUMN_NAME, dbID);
+
+        mDatabase.execSQL(query);
     }
 
     /**

@@ -9,4 +9,5 @@
     <string name="snack_bar_undo">Undo</string>
     <string name="navigation_drawer_open">Open</string>
     <string name="navigation_drawer_close">Close</string>
+    <string name="title_activity_edit_note">EditNoteActivity</string>
 </resources>

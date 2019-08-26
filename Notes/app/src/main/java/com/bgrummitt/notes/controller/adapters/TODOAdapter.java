@@ -65,4 +65,7 @@ public class TODOAdapter extends ListAdapter {
         currentSelectAllState = !currentSelectAllState;
     }
 
+    public ListTypes getType() {
+        return ListTypes.TODO_LIST;
+    }
 }
