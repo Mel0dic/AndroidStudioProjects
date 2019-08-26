@@ -22,7 +22,6 @@ public class EditNoteActivity extends AppCompatActivity {
     private ListAdapter.ListTypes mNoteType;
     private String mNoteSubject;
     private String mNoteBody;
-    private int mDbId;
     private EditText mSubjectEditText;
     private EditText mBodyEditText;
 

@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +24,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.bgrummitt.notes.controller.adapters.CompletedAdapter;
+import com.bgrummitt.notes.controller.adapters.ListAdapter;
 import com.bgrummitt.notes.controller.adapters.TODOAdapter;
 import com.bgrummitt.notes.controller.callback.SwipeToDeleteCallback;
 import com.bgrummitt.notes.controller.databse.DatabaseHelper;
@@ -321,7 +323,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onActivityResult(requestCode, resultCode, data);
 
         if(resultCode == NOTE_EDITED_ACTIVITY_RESULT){
-
+            mTODOListAdapter.editNote(data.getIntExtra(ListAdapter.NOTE_POSITION, -1), data.getStringExtra(ListAdapter.NOTE_SUBJECT), data.getStringExtra(ListAdapter.NOTE_BODY));
+            mTODOListAdapter.notifyDataSetChanged();
         }
+
     }
 }

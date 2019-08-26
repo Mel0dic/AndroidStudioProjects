@@ -29,6 +29,7 @@ public abstract class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListV
     public static final String NOTE_SUBJECT = "NOTE_SUBJECT";
     public static final String NOTE_BODY = "NOTE_BODY";
     public static final String NOTE_TYPE = "NOTE_TYPE";
+    public static final String NOTE_POSITION = "NOTE_POSITION_IN_ARRAY";
 
     public final Context mContext;
     public final List<Note> mNotes;
@@ -68,10 +69,11 @@ public abstract class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListV
             Toast.makeText(mContext, subjectTextView.getText(), Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(mContext, ViewNoteActivity.class);
             intent.putExtra(NOTE_ID, note.getDatabaseID());
+            intent.putExtra(NOTE_POSITION, getLayoutPosition());
             intent.putExtra(NOTE_SUBJECT, note.getSubject());
             intent.putExtra(NOTE_BODY, note.getNoteBody());
             intent.putExtra(NOTE_TYPE, getType());
-            mContext.startActivity(intent);
+            ((MainActivity)mContext).startActivityForResult(intent, MainActivity.NOTE_EDITED_ACTIVITY_RESULT);
         }
     }
 
@@ -120,6 +122,12 @@ public abstract class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListV
     public void insertNoteIntoList(Note note, int position){
         mNotes.add(position, note);
         notifyItemInserted(position);
+    }
+
+    public void editNote(int position, String subject, String body){
+        Note note = mNotes.get(position);
+        note.setSubject(subject);
+        note.setNoteBody(body);
     }
 
     public abstract ListTypes getType();

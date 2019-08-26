@@ -29,6 +29,7 @@ public class ViewNoteActivity extends AppCompatActivity {
     private String mNoteBody;
     private TextView mBodyTextView;
     private int mDbID;
+    private int mArrayPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class ViewNoteActivity extends AppCompatActivity {
         mNoteSubject = mIntent.getStringExtra(ListAdapter.NOTE_SUBJECT);
         mNoteBody = mIntent.getStringExtra(ListAdapter.NOTE_BODY);
         mNoteType = (ListAdapter.ListTypes)mIntent.getSerializableExtra(ListAdapter.NOTE_TYPE);
+        mArrayPosition = mIntent.getIntExtra(ListAdapter.NOTE_POSITION, -1);
 
         // Get the size of the window
         DisplayMetrics dm = new DisplayMetrics();
@@ -137,6 +139,7 @@ public class ViewNoteActivity extends AppCompatActivity {
                 setTitle(subject);
                 mBodyTextView.setText(body);
                 editTodoNote(subject, body);
+                setReturnIntent(subject, body, mArrayPosition);
                 break;
         }
     }
@@ -145,6 +148,18 @@ public class ViewNoteActivity extends AppCompatActivity {
         DatabaseHelper dbHelper = new DatabaseHelper(this, "NOTES_DB");
         dbHelper.editNote(DatabaseHelper.TO_COMPLETE_TABLE_NAME, mDbID, subject, body);
         dbHelper.close();
+
+        Intent intent = new Intent();
+        intent.putExtra(ListAdapter.NOTE_SUBJECT, subject);
+    }
+
+    public void setReturnIntent(String subject, String body, int position){
+        Intent intent = new Intent();
+        intent.putExtra(ListAdapter.NOTE_SUBJECT, subject);
+        intent.putExtra(ListAdapter.NOTE_BODY, body);
+        Log.d(TAG, Integer.toString(position));
+        intent.putExtra(ListAdapter.NOTE_POSITION, position);
+        setResult(MainActivity.NOTE_EDITED_ACTIVITY_RESULT, intent);
     }
 
 }
