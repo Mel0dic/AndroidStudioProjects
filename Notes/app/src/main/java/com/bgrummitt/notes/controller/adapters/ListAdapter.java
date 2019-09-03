@@ -19,6 +19,7 @@ import com.bgrummitt.notes.activities.ViewNoteActivity;
 import com.bgrummitt.notes.model.Note;
 import com.bgrummitt.notes.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
@@ -33,8 +34,9 @@ public abstract class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListV
 
     public final Context mContext;
     public final List<Note> mNotes;
+    public List<Note> mDeletedNotes;
     public Note mRecentlyDeletedItem;
-    public Boolean currentSelectAllState = false;
+    public List<Integer> mDeletedNotePosition;
 
     public ListAdapter (Context context, List<Note> notes){
         mContext = context;
@@ -109,13 +111,19 @@ public abstract class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListV
 
     public abstract void deleteItem(int position);
 
-    protected abstract void showUndoSnackBar(int idToUndo);
+    protected abstract void showUndoSingleSnackBar(int idToUndo);
 
     public void changeIDs(int idGreaterThan, int changeBy){
         for(Note note : mNotes){
             if(note.getDatabaseID() > idGreaterThan){
                 note.setDatabaseID(note.getDatabaseID() + changeBy);
             }
+        }
+    }
+
+    public void resetIDs(){
+        for(int i = 0; i < mNotes.size(); i++){
+            mNotes.get(i).setDatabaseID(i+1);
         }
     }
 
@@ -131,6 +139,39 @@ public abstract class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListV
     }
 
     public abstract ListTypes getType();
+
+    public void selectAll(Boolean type){
+        for(Note note : mNotes){
+            note.setIsCompleted(type);
+        }
+    }
+
+    public void removeAndRestructureNotes(int position){
+        mNotes.remove(position);
+        changeIDs(mRecentlyDeletedItem.getDatabaseID(), -1);
+    }
+
+    public void deleteSelected(){
+        mDeletedNotes = new ArrayList<>();
+        mDeletedNotePosition = new ArrayList<>();
+        int whileILessThan = mNotes.size();
+        for(int i = 0; i < whileILessThan; i++){
+            if(mNotes.get(i).getIsCompleted()){
+                mDeletedNotes.add(mNotes.get(i));
+                mNotes.remove(i);
+                mDeletedNotePosition.add(i + mDeletedNotes.size());
+                whileILessThan--;
+                i--;
+            }
+        }
+        Log.d(TAG, "Number To Delete : " + mDeletedNotes.size());
+    }
+
+    public void undoRecentSelectedDeleted(){
+        for(int i = 0; i < mDeletedNotes.size(); i++){
+            mNotes.add(mDeletedNotePosition.get(i), mDeletedNotes.get(i));
+        }
+    }
 
     public enum ListTypes{
         COMPLETED_LIST,

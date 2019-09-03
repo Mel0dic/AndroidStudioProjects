@@ -13,4 +13,12 @@
         android:title="Select All"
         />
 
+    <item android:id="@+id/action_de_select_all"
+        android:title="Deselect All"
+        />
+
+    <item android:id="@+id/action_delete_selected"
+        android:title="Delete Selected"
+        />
+
 </menu>

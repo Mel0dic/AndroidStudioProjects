@@ -2,7 +2,6 @@ package com.bgrummitt.notes.controller.adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
@@ -51,15 +50,14 @@ public class CompletedAdapter extends ListAdapter {
     public void deleteItem(int position) {
         mRecentlyDeletedItem = mNotes.get(position);
         mRecentlyDeletedDate = mNoteDates.get(position);
-        mNotes.remove(position);
+        removeAndRestructureNotes(position);
         mNoteDates.remove(position);
-        changeIDs(mRecentlyDeletedItem.getDatabaseID(), -1);
         notifyItemRemoved(position);
-        showUndoSnackBar(mRecentlyDeletedItem.getDatabaseID());
+        showUndoSingleSnackBar(mRecentlyDeletedItem.getDatabaseID());
     }
 
     @Override
-    protected void showUndoSnackBar(final int idToUndo) {
+    protected void showUndoSingleSnackBar(final int idToUndo) {
         View view = ((Activity) mContext).findViewById(R.id.list);
         Snackbar snackbar = Snackbar.make(view, R.string.snack_bar_undo,
                 Snackbar.LENGTH_LONG);

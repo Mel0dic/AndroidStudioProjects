@@ -25,10 +25,10 @@ public class TODOAdapter extends ListAdapter {
         mRecentlyDeletedItem = mNotes.get(position);
         mNotes.remove(position);
         notifyItemRemoved(position);
-        showUndoSnackBar(position);
+        showUndoSingleSnackBar(position);
     }
 
-    protected void showUndoSnackBar(final int idToUndo) {
+    protected void showUndoSingleSnackBar(final int idToUndo) {
         View view = ((Activity) mContext).findViewById(R.id.list);
         Snackbar snackbar = Snackbar.make(view, R.string.snack_bar_undo,
                 Snackbar.LENGTH_LONG);
@@ -58,14 +58,46 @@ public class TODOAdapter extends ListAdapter {
         ((MainActivity)mContext).markNoteCompleted(note);
     }
 
-    public void selectAll(){
-        for(Note note : mNotes){
-            note.setIsCompleted(!currentSelectAllState);
-        }
-        currentSelectAllState = !currentSelectAllState;
-    }
-
     public ListTypes getType() {
         return ListTypes.TODO_LIST;
     }
+
+    @Override
+    public void deleteSelected() {
+        super.deleteSelected();
+        notifyDataSetChanged();
+        showUndoMultipleSnackBar();
+    }
+
+    protected void showUndoMultipleSnackBar() {
+        View view = ((Activity) mContext).findViewById(R.id.list);
+        Snackbar snackbar = Snackbar.make(view, R.string.snack_bar_undo,
+                Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.snack_bar_undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                undoRecentSelectedDeleted();
+                notifyDataSetChanged();
+            }
+        });
+        snackbar.addCallback(new Snackbar.Callback(){
+
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+                Log.d(TAG, "Snackbar Dismissed");
+                if(event != Snackbar.Callback.DISMISS_EVENT_ACTION){
+                    Log.d(TAG, "Snackbar Dismissed By Timeout / New SnackBar / Swipe");
+                    for(int i = 0; i < mDeletedNotes.size(); i++){
+                        Log.d(TAG, "deleting");
+                        mDeletedNotes.get(i).setDatabaseID(mDeletedNotes.get(i).getDatabaseID() - i);
+                        ((MainActivity)mContext).markNoteCompleted(mDeletedNotes.get(i));
+                    }
+                    resetIDs();
+                }
+            }
+
+        });
+        snackbar.show();
+    }
+
 }

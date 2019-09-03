@@ -16,12 +16,15 @@ import android.widget.TextView;
 import com.bgrummitt.notes.R;
 import com.bgrummitt.notes.controller.adapters.ListAdapter;
 import com.bgrummitt.notes.controller.databse.DatabaseHelper;
+import com.bgrummitt.notes.model.Note;
 
 public class ViewNoteActivity extends AppCompatActivity {
 
     final static private String TAG = ViewNoteActivity.class.getSimpleName();
 
     final static public int EDITED_RETURN_RESULT = 13;
+    final static public int MOVE_TO_COMPLETED_RESULT = 16;
+    final static public int DELETE_FROM_COMPLETED = 34;
 
     private Intent mIntent;
     private ListAdapter.ListTypes mNoteType;
@@ -99,6 +102,8 @@ public class ViewNoteActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+        Intent intent = new Intent();
+
         switch (item.getItemId()){
             case android.R.id.home:
                 finish();
@@ -109,9 +114,15 @@ public class ViewNoteActivity extends AppCompatActivity {
                 break;
             case R.id.complete_button:
                 Log.d(TAG, "Complete Button");
+                intent.putExtra(ListAdapter.NOTE_POSITION, mArrayPosition);
+                setResult(MOVE_TO_COMPLETED_RESULT, intent);
+                finish();
                 break;
             case R.id.delete_button:
                 Log.d(TAG, "Delete Button");
+                intent.putExtra(ListAdapter.NOTE_POSITION, mArrayPosition);
+                setResult(DELETE_FROM_COMPLETED, intent);
+                finish();
                 break;
         }
 

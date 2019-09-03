@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DatabaseHelper mDatabaseHelper;
     private ItemTouchHelper mItemTouchHelper;
 
+    private String mCurrentPopulated;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,12 +133,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        } else if (id == R.id.action_select_all) {
-            Toast.makeText(this, "Select All", Toast.LENGTH_SHORT).show();
-            mTODOListAdapter.selectAll();
-            mTODOListAdapter.notifyDataSetChanged();
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_select_all:
+                Toast.makeText(this, "Select All", Toast.LENGTH_SHORT).show();
+                if(mCurrentPopulated.equals("TODO")) {
+                    mTODOListAdapter.selectAll(true);
+                    mTODOListAdapter.notifyDataSetChanged();
+                }else if(mCurrentPopulated.equals("COMPLETED")){
+                    mCompletedListAdapter.selectAll(true);
+                    mCompletedListAdapter.notifyDataSetChanged();
+                }
+                break;
+            case R.id.action_de_select_all:
+                Toast.makeText(this, "Deselect All", Toast.LENGTH_SHORT).show();
+                if(mCurrentPopulated.equals("TODO")) {
+                    mTODOListAdapter.selectAll(false);
+                    mTODOListAdapter.notifyDataSetChanged();
+                }else if(mCurrentPopulated.equals("COMPLETED")){
+                    mCompletedListAdapter.selectAll(false);
+                    mCompletedListAdapter.notifyDataSetChanged();
+                }
+                break;
+            case R.id.action_delete_selected:
+                if(mCurrentPopulated.equals("TODO")) {
+                    mTODOListAdapter.deleteSelected();
+                }else if(mCurrentPopulated.equals("COMPLETED")){
+                    mCompletedListAdapter.deleteSelected();
+                }
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -226,6 +252,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param notes to populate the recycler view with
      */
     private void initialiseRecyclerView(List<Note> notes){
+        mCurrentPopulated = "TODO";
         // Create the list adapter and set the recycler views adapter to the created list adapter
         mTODOListAdapter = new TODOAdapter(this, notes);
         mRecyclerView.setAdapter(mTODOListAdapter);
@@ -244,6 +271,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param notes to populate the recycler view
      */
     private void setRecyclerViewToCompleted(List<CompletedNote> notes){
+        mCurrentPopulated = "COMPLETED";
         // Create the list adapter and set the recycler views adapter to the created list adapter
         mCompletedListAdapter = new CompletedAdapter(this, notes);
         mRecyclerView.setAdapter(mCompletedListAdapter);
@@ -259,6 +287,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param notes to populate the recycler view
      */
     private void setRecyclerViewToTODO(List<Note> notes){
+        mCurrentPopulated = "TODO";
         // Set the new adapter
         mTODOListAdapter = new TODOAdapter(this, notes);
         mRecyclerView.setAdapter(mTODOListAdapter);
@@ -322,9 +351,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode == NOTE_EDITED_ACTIVITY_RESULT){
-            mTODOListAdapter.editNote(data.getIntExtra(ListAdapter.NOTE_POSITION, -1), data.getStringExtra(ListAdapter.NOTE_SUBJECT), data.getStringExtra(ListAdapter.NOTE_BODY));
-            mTODOListAdapter.notifyDataSetChanged();
+        int pos;
+
+        switch(resultCode){
+            case NOTE_EDITED_ACTIVITY_RESULT:
+                mTODOListAdapter.editNote(data.getIntExtra(ListAdapter.NOTE_POSITION, -1), data.getStringExtra(ListAdapter.NOTE_SUBJECT), data.getStringExtra(ListAdapter.NOTE_BODY));
+                mTODOListAdapter.notifyDataSetChanged();
+                break;
+            case ViewNoteActivity.MOVE_TO_COMPLETED_RESULT:
+                pos = data.getIntExtra(ListAdapter.NOTE_POSITION, -1);
+                try {
+                    mTODOListAdapter.deleteItem(pos);
+                } catch (ArrayIndexOutOfBoundsException e){
+                    Log.d(TAG, e.toString());
+                }
+                break;
+            case ViewNoteActivity.DELETE_FROM_COMPLETED:
+                pos = data.getIntExtra(ListAdapter.NOTE_POSITION, -1);
+                try {
+                    mCompletedListAdapter.deleteItem(pos);
+                } catch (ArrayIndexOutOfBoundsException e){
+                    Log.d(TAG, e.toString());
+                }
         }
 
     }
