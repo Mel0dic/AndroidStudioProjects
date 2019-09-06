@@ -56,6 +56,19 @@ public abstract class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListV
             noteTextView = itemView.findViewById(R.id.mainNoteDisplay);
             completeCheckBox = itemView.findViewById(R.id.CompletedCheck);
 
+            completeCheckBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(completeCheckBox.isChecked()){
+                        Log.d(TAG, "Check Box Ticked : " + getLayoutPosition());
+                        mNotes.get(getLayoutPosition()).setIsCompleted(true);
+                    }else {
+                        Log.d(TAG, "Check Box Un-ticked : " + getLayoutPosition());
+                        mNotes.get(getLayoutPosition()).setIsCompleted(false);
+                    }
+                }
+            });
+
             itemView.setOnClickListener(this);
         }
 
@@ -169,7 +182,7 @@ public abstract class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListV
 
     public void undoRecentSelectedDeleted(){
         for(int i = 0; i < mDeletedNotes.size(); i++){
-            mNotes.add(mDeletedNotePosition.get(i), mDeletedNotes.get(i));
+            mNotes.add(mDeletedNotePosition.get(i) - 1, mDeletedNotes.get(i));
         }
     }
 
